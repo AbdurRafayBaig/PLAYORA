@@ -1,18 +1,16 @@
-"use client"
+import type { Metadata } from "next"
+import { AdminShell } from "@/components/layout/AdminShell"
 
-import { AdminSidebar } from "@/components/layout/AdminSidebar"
+export const metadata: Metadata = {
+  title: { default: "Admin", template: "%s | PLAYORA Admin" },
+  // The console is gated; keep it out of search results entirely.
+  robots: { index: false, follow: false },
+}
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <div className="flex min-h-screen bg-surface">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-    </div>
-  )
+  return <AdminShell>{children}</AdminShell>
 }

@@ -2,18 +2,23 @@
 
 /* ═══════════════════════════════════════════════════════════
    PLAYORA — Design System
-   Ludo-inspired color palette: Red / Yellow / Green / Blue
+   Ludo-inspired palette: Red / Yellow / Green / Blue
    ═══════════════════════════════════════════════════════════ */
 
+/* Tailwind v4 defaults `dark:` to prefers-color-scheme. We drive the theme
+   with a `.dark` class (next-themes), so the variant has to be redefined or
+   every `dark:` utility silently ignores the toggle. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* ── Ludo Core Palette ── */
+  /* ── Ludo Core Palette (brand surfaces, fills, logos) ── */
   --color-ludo-red: #E53935;
   --color-ludo-red-light: #FF6F60;
   --color-ludo-red-dark: #AB000D;
 
   --color-ludo-yellow: #FBC02D;
   --color-ludo-yellow-light: #FFF263;
-  --color-ludo-yellow-dark: #C49000;
+  --color-ludo-yellow-dark: #B37F00;
 
   --color-ludo-green: #43A047;
   --color-ludo-green-light: #76D275;
@@ -23,30 +28,40 @@
   --color-ludo-blue-light: #6AB7FF;
   --color-ludo-blue-dark: #005CB2;
 
+  /* ── Accessible text variants ──
+     The brand hues are tuned for fills. These are the same hues shifted to
+     clear WCAG AA (4.5:1) as small text on the current surface. */
+  --color-ludo-red-ink: #C62828;
+  --color-ludo-yellow-ink: #8A6200;
+  --color-ludo-green-ink: #2E7D32;
+  --color-ludo-blue-ink: #1565C0;
+
   /* ── Semantic Tokens ── */
   --color-primary: #E53935;
   --color-primary-foreground: #FFFFFF;
 
   --color-surface: #F7F8FA;
   --color-surface-raised: #FFFFFF;
-  --color-surface-overlay: rgba(0, 0, 0, 0.5);
+  --color-surface-sunken: #EDEFF3;
+  --color-surface-overlay: rgba(11, 14, 20, 0.55);
 
   --color-ink: #17202A;
-  --color-ink-muted: #667085;
-  --color-ink-faint: #98A2B3;
+  --color-ink-muted: #4B5563;
+  --color-ink-faint: #69717F;
 
   --color-border: #E5E7EB;
   --color-border-strong: #D1D5DB;
 
-  --color-success: #43A047;
-  --color-warning: #FBC02D;
-  --color-danger: #E53935;
-  --color-info: #1E88E5;
+  --color-success: #2E7D32;
+  --color-warning: #8A6200;
+  --color-danger: #C62828;
+  --color-info: #1565C0;
 
   /* ── Typography ── */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
 
-  /* ── Spacing ── */
+  /* ── Radii ── */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -58,37 +73,61 @@
   --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-elevated: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
 
-  /* ── Animations ── */
+  /* ── Easing ── */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ═══════════════════════════════════
    Dark Mode Overrides
+   Unlayered, so these always beat the `@layer theme` defaults.
    ═══════════════════════════════════ */
 .dark {
   --color-primary: #FF6F60;
-  --color-primary-foreground: #FFFFFF;
+  --color-primary-foreground: #17202A;
 
   --color-surface: #0B0E14;
   --color-surface-raised: #151921;
+  --color-surface-sunken: #070910;
   --color-surface-overlay: rgba(0, 0, 0, 0.7);
 
   --color-ink: #F0F2F5;
-  --color-ink-muted: #98A2B3;
-  --color-ink-faint: #667085;
+  --color-ink-muted: #A8B2C1;
+  --color-ink-faint: #7C8699;
 
-  --color-border: #1F2937;
+  --color-border: #232B38;
   --color-border-strong: #374151;
 
-  --color-success: #76D275;
-  --color-warning: #FFF263;
-  --color-danger: #FF6F60;
-  --color-info: #6AB7FF;
+  /* Brand hues lighten on dark surfaces so fills and text stay legible. */
+  --color-ludo-red: #FF6B62;
+  --color-ludo-red-light: #FF9E96;
+  --color-ludo-red-dark: #E53935;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-elevated: 0 10px 25px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.3);
+  --color-ludo-yellow: #FBC02D;
+  --color-ludo-yellow-light: #FFF263;
+  --color-ludo-yellow-dark: #FFD54F;
+
+  --color-ludo-green: #66BB6A;
+  --color-ludo-green-light: #A5D6A7;
+  --color-ludo-green-dark: #43A047;
+
+  --color-ludo-blue: #64B5F6;
+  --color-ludo-blue-light: #A3D4FF;
+  --color-ludo-blue-dark: #1E88E5;
+
+  --color-ludo-red-ink: #FF8A80;
+  --color-ludo-yellow-ink: #FFD54F;
+  --color-ludo-green-ink: #81C784;
+  --color-ludo-blue-ink: #90CAF9;
+
+  --color-success: #81C784;
+  --color-warning: #FFD54F;
+  --color-danger: #FF8A80;
+  --color-info: #90CAF9;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 10px 25px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* ═══════════════════════════════════
@@ -104,6 +143,13 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Stops iOS Safari from inflating text in landscape. */
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 body {
@@ -111,12 +157,56 @@ body {
   color: var(--color-ink);
   background-color: var(--color-surface);
   line-height: 1.6;
+  /* Guards against a single long word (team names, emails) forcing the
+     whole page to scroll sideways on a narrow phone. */
+  overflow-wrap: break-word;
   transition: background-color 0.3s var(--ease-smooth), color 0.2s var(--ease-smooth);
+}
+
+/* Locked while a mobile drawer is open. */
+body[data-scroll-locked="true"] {
+  overflow: hidden;
 }
 
 ::selection {
   background-color: var(--color-ludo-red);
-  color: white;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════
+   Focus — visible for keyboards, quiet for mice
+   ═══════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--color-ludo-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Inputs draw their own ring. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 0.5rem;
+  transform: translate(-50%, -250%);
+  z-index: 100;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-ludo-red);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-elevated);
+  transition: transform 0.2s var(--ease-smooth);
+}
+
+.skip-link:focus {
+  transform: translate(-50%, 0);
 }
 
 /* ═══════════════════════════════════
@@ -141,9 +231,13 @@ body {
   transition: box-shadow 0.25s var(--ease-smooth), transform 0.25s var(--ease-spring);
 }
 
-.card-base:hover {
-  box-shadow: var(--shadow-card-hover);
-  transform: translateY(-2px);
+/* Lift only where a pointer can actually hover — on touch this fires on tap
+   and leaves the card stuck in its hover state. */
+@media (hover: hover) and (pointer: fine) {
+  .card-base:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
 }
 
 .ludo-gradient {
@@ -172,10 +266,47 @@ body {
 }
 
 .text-gradient-ludo {
-  background: linear-gradient(135deg, #E53935, #FBC02D, #43A047, #1E88E5);
+  /* Painted first, so the text stays readable if background-clip is
+     unsupported or forced-colors strips the gradient. */
+  color: var(--color-ludo-red);
+  background-image: linear-gradient(135deg, #E53935, #E8A200, #2E9B34, #1E88E5);
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-ludo {
+  background-image: linear-gradient(135deg, #FF6B62, #FFD54F, #66BB6A, #64B5F6);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .text-gradient-ludo {
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@media (forced-colors: active) {
+  .text-gradient-ludo {
+    -webkit-text-fill-color: currentColor;
+    background-image: none;
+  }
+}
+
+/* Respects the iPhone home indicator / Android gesture bar. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 /* ═══════════════════════════════════
@@ -217,26 +348,77 @@ body {
   to   { transform: rotate(360deg); }
 }
 
-.animate-fade-in     { animation: fade-in 0.5s var(--ease-smooth) forwards; }
-.animate-fade-in-up  { animation: fade-in-up 0.6s var(--ease-smooth) forwards; }
-.animate-slide-right { animation: slide-in-right 0.5s var(--ease-smooth) forwards; }
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* `both` (not `forwards`) — with a delay, `forwards` leaves the element at
+   its natural opacity during the wait, so it flashes in and then restarts. */
+.animate-fade-in     { animation: fade-in 0.5s var(--ease-smooth) both; }
+.animate-fade-in-up  { animation: fade-in-up 0.6s var(--ease-smooth) both; }
+.animate-slide-right { animation: slide-in-right 0.5s var(--ease-smooth) both; }
 .animate-pulse-glow  { animation: pulse-glow 2s ease-in-out infinite; }
 .animate-float       { animation: float 3s ease-in-out infinite; }
 .animate-spin-slow   { animation: spin-slow 8s linear infinite; }
 
-/* Staggered animation delays */
 .delay-100 { animation-delay: 100ms; }
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-400 { animation-delay: 400ms; }
 .delay-500 { animation-delay: 500ms; }
 
+/* Loading skeleton */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--color-ink-faint) 14%, transparent);
+  border-radius: var(--radius-md);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-ink-faint) 12%, transparent),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+
+/* ═══════════════════════════════════
+   Reduced Motion
+   Several animations here loop forever; for anyone who asked the OS to
+   calm motion down, they are a genuine problem, not a nicety.
+   ═══════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card-base:hover {
+    transform: none;
+  }
+}
+
 /* ═══════════════════════════════════
    Scrollbar
    ═══════════════════════════════════ */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -244,10 +426,30 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-ink-faint);
+  background: var(--color-border-strong);
   border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-ink-muted);
+  background: var(--color-ink-faint);
+}
+
+/* ═══════════════════════════════════
+   Print — fixtures and standings get printed and pinned to a wall
+   ═══════════════════════════════════ */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .card-base {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
 }

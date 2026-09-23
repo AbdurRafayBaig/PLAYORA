@@ -1,63 +1,105 @@
-"use client"
-
-import { Radio } from "lucide-react"
+import type { Metadata } from "next"
+import Link from "next/link"
+import { Radio, Calendar } from "lucide-react"
 import { PlayoraHeader } from "@/components/layout/PlayoraHeader"
 import { PlayoraFooter } from "@/components/layout/PlayoraFooter"
 import { MatchCard } from "@/components/cards/MatchCard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { getLiveMatches, getUpcomingMatches, TOURNAMENT } from "@/lib/data"
+import { pluralise } from "@/lib/utils"
 
-const LIVE_MATCHES = [
-  { id: "QF1", teamA: "Thunder Hawks", teamB: "Storm Riders", status: "live" as const, venue: "Main Hall", table: "T1", time: "2:30 PM", round: "Quarter Final 1" },
-  { id: "QF2", teamA: "Phoenix Squad", teamB: "Royal Knights", status: "live" as const, venue: "Main Hall", table: "T2", time: "2:30 PM", round: "Quarter Final 2" },
-]
+export const metadata: Metadata = {
+  title: "Live Matches",
+  description:
+    "Every Ludo Championship match currently in progress, with live scores, venue and table assignments.",
+  alternates: { canonical: "/live" },
+}
 
 export default function LivePage() {
+  const liveMatches = getLiveMatches()
+  const nextUp = getUpcomingMatches().slice(0, 2)
+
   return (
-    <main className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       <PlayoraHeader />
 
-      <div className="flex-1 max-w-5xl mx-auto px-4 py-8 w-full">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="relative flex h-3 w-3">
+      <main id="main-content" className="flex-1 max-w-5xl mx-auto px-4 py-8 w-full">
+        <PageHeader
+          eyebrow="Live Now"
+          title="Live Matches"
+          description={`${TOURNAMENT.name} · ${TOURNAMENT.stage}`}
+          icon={
+            <span className="relative flex h-3 w-3" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ludo-red opacity-75" />
               <span className="relative inline-flex rounded-full h-3 w-3 bg-ludo-red" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-ludo-red">Live Now</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">Live Matches</h1>
-          <p className="text-xs text-ink-muted mt-1">
-            {LIVE_MATCHES.length} match{LIVE_MATCHES.length !== 1 ? "es" : ""} currently in progress
-          </p>
-        </div>
+          }
+        />
 
-        {/* Live Matches */}
-        {LIVE_MATCHES.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {LIVE_MATCHES.map((match) => (
-              <MatchCard key={match.id} {...match} />
-            ))}
-          </div>
-        ) : (
-          <div className="card-base p-12 text-center space-y-3">
-            <Radio className="w-12 h-12 mx-auto text-ink-faint" />
-            <h3 className="text-lg font-bold text-ink">No Live Matches</h3>
-            <p className="text-sm text-ink-muted max-w-md mx-auto">
-              There are no matches currently in progress. Check the fixtures page for upcoming schedules.
+        <p className="sr-only" role="status">
+          {liveMatches.length === 0
+            ? "No matches are currently in progress."
+            : `${pluralise(liveMatches.length, "match", "matches")} in progress.`}
+        </p>
+
+        {liveMatches.length > 0 ? (
+          <>
+            <p className="text-xs text-ink-muted mb-4">
+              {pluralise(liveMatches.length, "match", "matches")} currently in progress
             </p>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {liveMatches.map((match) => (
+                <MatchCard key={match.id} {...match} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <EmptyState
+            icon={<Radio className="w-6 h-6" />}
+            title="No live matches"
+            description="There are no matches currently in progress. Check the fixtures page for upcoming schedules."
+            action={
+              <Link
+                href="/fixtures"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ludo-blue text-white text-xs font-semibold hover:bg-ludo-blue-dark transition-colors"
+              >
+                <Calendar aria-hidden="true" className="w-4 h-4" />
+                View fixtures
+              </Link>
+            }
+          />
         )}
 
-        {/* Auto-refresh Notice */}
-        <div className="mt-6 text-center">
-          <p className="text-[11px] text-ink-faint flex items-center justify-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-ludo-green animate-pulse" />
-            Scores update automatically via live connection
-          </p>
-        </div>
-      </div>
+        {/* Up next keeps the page useful between matches, rather than
+            leaving a visitor at a dead end. */}
+        {nextUp.length > 0 && (
+          <section className="mt-10" aria-labelledby="next-up">
+            <h2
+              id="next-up"
+              className="text-sm font-bold text-ink flex items-center gap-2 mb-3"
+            >
+              <Calendar aria-hidden="true" className="w-4 h-4 text-ludo-blue-ink" />
+              Up Next
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {nextUp.map((match) => (
+                <MatchCard key={match.id} {...match} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <p className="mt-8 text-center text-[11px] text-ink-faint flex items-center justify-center gap-1.5">
+          <span
+            aria-hidden="true"
+            className="w-1.5 h-1.5 rounded-full bg-ludo-green animate-pulse"
+          />
+          Scores update automatically via live connection
+        </p>
+      </main>
 
       <PlayoraFooter />
-    </main>
+    </div>
   )
 }
