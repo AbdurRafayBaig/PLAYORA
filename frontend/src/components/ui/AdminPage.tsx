@@ -40,7 +40,7 @@ export function AdminPage({
  */
 export function PreviewNotice({ children }: { children: ReactNode }) {
   return (
-    <p className="text-[11px] text-ink-muted bg-ludo-blue/5 border border-ludo-blue/20 rounded-xl px-3.5 py-2.5 leading-relaxed">
+    <p className="text-[11px] text-ink-muted bg-ludo-indigo/5 border border-ludo-indigo/20 rounded-xl px-3.5 py-2.5 leading-relaxed">
       {children}
     </p>
   )

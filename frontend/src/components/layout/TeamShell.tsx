@@ -3,23 +3,25 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Home, Users, Swords, Trophy, BarChart3, Bell, Settings, LogOut, ExternalLink,
+  Home, Users, Swords, GitBranch, Bell, Settings, LogOut, ExternalLink,
 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import { TeamBottomNav } from "@/components/layout/TeamBottomNav"
 import { LudoMark } from "@/components/layout/LudoMark"
 import { BRAND, TEAM_NAV } from "@/lib/constants"
-import { getSignedInTeam, NOTIFICATIONS } from "@/lib/data"
+import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
+import { initials } from "@/lib/tournament/engine"
 import { cn } from "@/lib/utils"
 
 const iconMap: Record<string, React.ElementType> = {
-  Home, Users, Swords, Trophy, BarChart3, Bell, Settings,
+  Home, Users, Swords, GitBranch, Bell, Settings,
 }
 
 export function TeamShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const team = getSignedInTeam()
-  const unread = NOTIFICATIONS.filter((n) => !n.read).length
+  const { notices } = useTournament()
+  const team = useSignedInTeam()
+  const unread = notices.filter((n) => n.teamId === null || n.teamId === team?.id).length
 
   const isActive = (href: string) =>
     pathname === href || (href !== "/team" && pathname.startsWith(`${href}/`))
@@ -47,14 +49,14 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3 min-w-0">
             <span
               aria-hidden="true"
-              className="w-10 h-10 shrink-0 rounded-xl bg-ludo-red/10 flex items-center justify-center text-sm font-bold text-ludo-red-ink"
+              className="w-10 h-10 shrink-0 rounded-xl bg-ludo-flame/10 flex items-center justify-center text-sm font-bold text-ludo-flame-ink"
             >
-              {team.initials}
+              {team ? initials(team.name) : "—"}
             </span>
             <span className="min-w-0">
-              <span className="block text-sm font-bold text-ink truncate">{team.name}</span>
+              <span className="block text-sm font-bold text-ink truncate">{team?.name ?? "Not signed in"}</span>
               <span className="block text-[10px] text-ink-muted">
-                Team Code: {team.code}
+                {team ? `Team ID: ${team.code}` : "Sign in to see your matches"}
               </span>
             </span>
           </div>
@@ -73,14 +75,14 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-200",
                       active
-                        ? "bg-ludo-red/10 text-ludo-red-ink font-semibold"
+                        ? "bg-ludo-flame/10 text-ludo-flame-ink font-semibold"
                         : "text-ink-muted hover:text-ink hover:bg-ink-faint/10",
                     )}
                   >
                     {Icon && <Icon aria-hidden="true" className="w-5 h-5 shrink-0" />}
                     <span className="truncate">{item.label}</span>
                     {item.href === "/team/notifications" && unread > 0 && (
-                      <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-ludo-red-solid text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+                      <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-ludo-flame-solid text-white text-[10px] font-bold flex items-center justify-center shrink-0">
                         {unread}
                         <span className="sr-only"> unread</span>
                       </span>
@@ -102,7 +104,7 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
           </Link>
           <Link
             href="/login"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-muted hover:text-ludo-red-ink hover:bg-ludo-red/5 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-muted hover:text-ludo-flame-ink hover:bg-ludo-flame/5 transition-colors"
           >
             <LogOut aria-hidden="true" className="w-5 h-5 shrink-0" />
             Log out
@@ -121,7 +123,7 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
                 {activeLabel}
               </span>
               <span className="block text-[10px] text-ink-muted mt-0.5 truncate">
-                {team.name}
+                {team?.name ?? "Team Portal"}
               </span>
             </span>
           </Link>
@@ -138,7 +140,7 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
               {unread > 0 && (
                 <span
                   aria-hidden="true"
-                  className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-ludo-red-solid text-white text-[9px] font-bold flex items-center justify-center"
+                  className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-ludo-flame-solid text-white text-[9px] font-bold flex items-center justify-center"
                 >
                   {unread}
                 </span>

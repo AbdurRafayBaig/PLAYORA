@@ -23,8 +23,8 @@ export default function Error({
       className="min-h-screen flex flex-col items-center justify-center px-4 py-16 text-center"
     >
       <div className="w-full max-w-md space-y-5">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-ludo-red/10 flex items-center justify-center">
-          <AlertTriangle aria-hidden="true" className="w-7 h-7 text-ludo-red-ink" />
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-ludo-flame/10 flex items-center justify-center">
+          <AlertTriangle aria-hidden="true" className="w-7 h-7 text-ludo-flame-ink" />
         </div>
 
         <div className="space-y-2">
@@ -46,7 +46,7 @@ export default function Error({
           <button
             type="button"
             onClick={reset}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-ludo-red-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-red-solid-hover transition-colors cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-ludo-flame-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-flame-solid-hover transition-colors cursor-pointer"
           >
             <RotateCcw aria-hidden="true" className="w-4 h-4" />
             Try again

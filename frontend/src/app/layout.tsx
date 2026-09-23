@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme/ThemeProvider"
+import { TournamentProvider } from "@/lib/tournament/store"
 import { BRAND, SITE_URL } from "@/lib/constants"
 import "./globals.css"
 
@@ -82,8 +83,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F7F8FA" },
-    { media: "(prefers-color-scheme: dark)", color: "#0B0E14" },
+    { media: "(prefers-color-scheme: light)", color: "#FDF8EC" },
+    { media: "(prefers-color-scheme: dark)", color: "#140B1F" },
   ],
 }
 
@@ -98,7 +99,9 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <TournamentProvider>{children}</TournamentProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -19,32 +19,32 @@ const PLATFORM_FEATURES = [
     title: "Tournament Operations",
     description:
       "Full tournament lifecycle management — from team registration to final standings, with configurable formats and rules.",
-    color: "text-ludo-red-ink",
+    color: "text-ludo-flame-ink",
   },
   {
     icon: Radio,
     title: "Live Match Engine",
     description:
       "Real-time match tracking with WebSocket-powered live updates, scorer views, and instant result publication.",
-    color: "text-ludo-green-ink",
+    color: "text-ludo-lemon-ink",
   },
   {
     icon: Shield,
     title: "Admin Control & Audit",
     description:
       "Complete administrative control with audit-logged overrides, advancement decisions, and dispute resolution.",
-    color: "text-ludo-blue-ink",
+    color: "text-ludo-indigo-ink",
   },
 ]
 
 const TECH = [
   { name: "Next.js", color: "bg-ink/5 text-ink border-ink/10" },
-  { name: "TypeScript", color: "bg-ludo-blue/10 text-ludo-blue-ink border-ludo-blue/20" },
-  { name: "Tailwind CSS", color: "bg-ludo-blue/10 text-ludo-blue-ink border-ludo-blue/20" },
-  { name: "Django", color: "bg-ludo-green/10 text-ludo-green-ink border-ludo-green/20" },
-  { name: "Django REST", color: "bg-ludo-green/10 text-ludo-green-ink border-ludo-green/20" },
-  { name: "PostgreSQL", color: "bg-ludo-blue/10 text-ludo-blue-ink border-ludo-blue/20" },
-  { name: "WebSockets", color: "bg-ludo-red/10 text-ludo-red-ink border-ludo-red/20" },
+  { name: "TypeScript", color: "bg-ludo-indigo/10 text-ludo-indigo-ink border-ludo-indigo/20" },
+  { name: "Tailwind CSS", color: "bg-ludo-indigo/10 text-ludo-indigo-ink border-ludo-indigo/20" },
+  { name: "Django", color: "bg-ludo-lemon/10 text-ludo-lemon-ink border-ludo-lemon/20" },
+  { name: "Django REST", color: "bg-ludo-lemon/10 text-ludo-lemon-ink border-ludo-lemon/20" },
+  { name: "PostgreSQL", color: "bg-ludo-indigo/10 text-ludo-indigo-ink border-ludo-indigo/20" },
+  { name: "WebSockets", color: "bg-ludo-flame/10 text-ludo-flame-ink border-ludo-flame/20" },
   { name: "Vercel", color: "bg-ink/5 text-ink border-ink/10" },
 ]
 
@@ -169,14 +169,14 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="p-6 rounded-2xl border border-ludo-red/20 bg-ludo-red/5 text-center space-y-4 animate-fade-in-up anim-delay-500">
+        <section className="p-6 rounded-2xl border border-ludo-flame/20 bg-ludo-flame/5 text-center space-y-4 animate-fade-in-up anim-delay-500">
           <h2 className="text-sm font-bold text-ink">
             Ready to Explore the Tournament?
           </h2>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
             <Link
               href="/live"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-ludo-red-solid text-white text-xs font-semibold shadow hover:bg-ludo-red-solid-hover transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-ludo-flame-solid text-white text-xs font-semibold shadow hover:bg-ludo-flame-solid-hover transition-colors"
             >
               <Radio aria-hidden="true" className="w-4 h-4" />
               Live Matches

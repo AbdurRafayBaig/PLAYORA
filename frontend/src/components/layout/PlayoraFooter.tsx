@@ -44,7 +44,7 @@ export function PlayoraFooter() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-sm text-ink-muted hover:text-ludo-red-ink transition-colors duration-200"
+                    className="text-sm text-ink-muted hover:text-ludo-flame-ink transition-colors duration-200"
                   >
                     {item.label}
                   </Link>
@@ -66,7 +66,7 @@ export function PlayoraFooter() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className="text-sm text-ink-muted hover:text-ludo-red-ink transition-colors duration-200"
+                    className="text-sm text-ink-muted hover:text-ludo-flame-ink transition-colors duration-200"
                   >
                     {item.label}
                   </Link>
@@ -113,13 +113,13 @@ export function PlayoraFooter() {
           </p>
           <p className="text-xs text-ink-muted flex items-center gap-1 flex-wrap justify-center">
             Built with
-            <Heart aria-label="love" className="w-3 h-3 text-ludo-red fill-ludo-red" />
+            <Heart aria-label="love" className="w-3 h-3 text-ludo-flame fill-ludo-flame" />
             by
             <a
               href="https://www.linkedin.com/in/irafaybaig/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ludo-blue-ink hover:underline font-semibold inline-flex items-center gap-0.5"
+              className="text-ludo-indigo-ink hover:underline font-semibold inline-flex items-center gap-0.5"
             >
               Abdur Rafay Baig
               <ExternalLink aria-hidden="true" className="w-2.5 h-2.5 opacity-60" />

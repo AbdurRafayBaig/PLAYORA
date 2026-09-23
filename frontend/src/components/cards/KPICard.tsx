@@ -13,22 +13,22 @@ interface KPICardProps {
 }
 
 const accentStyles = {
-  red: "border-t-ludo-red",
-  yellow: "border-t-ludo-yellow",
-  green: "border-t-ludo-green",
-  blue: "border-t-ludo-blue",
+  red: "border-t-ludo-flame",
+  yellow: "border-t-ludo-mango",
+  green: "border-t-ludo-lemon",
+  blue: "border-t-ludo-indigo",
 } as const
 
 const iconBgStyles = {
-  red: "bg-ludo-red/10 text-ludo-red-ink",
-  yellow: "bg-ludo-yellow/15 text-ludo-yellow-ink",
-  green: "bg-ludo-green/10 text-ludo-green-ink",
-  blue: "bg-ludo-blue/10 text-ludo-blue-ink",
+  red: "bg-ludo-flame/10 text-ludo-flame-ink",
+  yellow: "bg-ludo-mango/15 text-ludo-mango-ink",
+  green: "bg-ludo-lemon/10 text-ludo-lemon-ink",
+  blue: "bg-ludo-indigo/10 text-ludo-indigo-ink",
 } as const
 
 const changeStyles = {
-  positive: "bg-ludo-green/10 text-ludo-green-ink",
-  negative: "bg-ludo-red/10 text-ludo-red-ink",
+  positive: "bg-ludo-lemon/10 text-ludo-lemon-ink",
+  negative: "bg-ludo-flame/10 text-ludo-flame-ink",
   neutral: "bg-ink-faint/10 text-ink-muted",
 } as const
 

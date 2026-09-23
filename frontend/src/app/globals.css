@@ -2,7 +2,8 @@
 
 /* ═══════════════════════════════════════════════════════════
    PLAYORA — Design System
-   Ludo-inspired palette: Red / Yellow / Green / Blue
+   Ludo board palette: Atomic Orange / Melted Mango / Indigo Flame /
+   Electric Orchid, over Deep Plum and Vanilla.
 
    ── A note on cascade layers ──
    Tailwind v4 emits `@layer theme, base, components, utilities`. Unlayered
@@ -26,65 +27,70 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* ── Ludo Core Palette (brand surfaces, fills, logos) ── */
-  --color-ludo-red: #E53935;
-  --color-ludo-red-light: #FF6F60;
-  --color-ludo-red-dark: #AB000D;
-
-  --color-ludo-yellow: #FBC02D;
-  --color-ludo-yellow-light: #FFF263;
-  --color-ludo-yellow-dark: #B37F00;
-
-  --color-ludo-green: #43A047;
-  --color-ludo-green-light: #76D275;
-  --color-ludo-green-dark: #00701A;
-
-  --color-ludo-blue: #1E88E5;
-  --color-ludo-blue-light: #6AB7FF;
-  --color-ludo-blue-dark: #005CB2;
+  /* ── Ludo Board Palette ──
+     Five supplied duotone pairs, resolved into one system. The four hues
+     below are the four home bases on the board and on the logo. */
+  --color-ludo-flame: #FF5C23;    /* Atomic Orange  — live, primary, urgent */
+  --color-ludo-mango: #FFCE6B;    /* Melted Mango   — warning, check-in, gold */
+  --color-ludo-indigo: #4B3FCF;   /* Indigo Flame   — scheduled, info, links */
+  --color-ludo-orchid: #E46CFF;   /* Electric Orchid— accent, your team */
+  --color-ludo-lemon: #F5FF67;    /* Lemon Glitch   — advanced, winner */
+  --color-ludo-ice: #C8F3FF;      /* Ice Cream Blue — soft info fills */
+  --color-ludo-plum: #2E0F35;     /* Deep Plum      — deep ink, dark surface */
+  --color-ludo-void: #1C2459;     /* Blueberry Void — logo ground, deep accent */
+  --color-ludo-vanilla: #FFF4D6;  /* Vanilla        — warm light, dark-mode ink */
 
   /* ── Accessible text variants ──
-     The brand hues are tuned for fills. These are the same hues shifted to
-     clear WCAG AA (4.5:1) as small text on the current surface. */
-  --color-ludo-red-ink: #C62828;
-  --color-ludo-yellow-ink: #8A6200;
-  --color-ludo-green-ink: #2E7D32;
-  --color-ludo-blue-ink: #1565C0;
+     The board hues are tuned as fills; several are far too light to sit on
+     a page as 11px text. These are the same hues pushed to clear WCAG AA
+     (4.5:1) against the current surface. Dark-mode values are overridden
+     in the `.dark` block, since the direction of travel reverses. */
+  --color-ludo-flame-ink: #C24314;
+  --color-ludo-mango-ink: #8A5A00;
+  --color-ludo-indigo-ink: #4B3FCF;
+  --color-ludo-orchid-ink: #A32BC2;
+  --color-ludo-lemon-ink: #5E6B00;
 
   /* ── Solid fills that carry white text ──
-     White on the brand red measures 4.23:1 — close, but under the 4.5:1 AA
-     floor, and it was the background of every primary button on the site.
-     Blue (3.68:1) and green (3.30:1) were further out. These are the same
-     hues one step darker, and they hold up on both light and dark surfaces
-     so a button does not need to change colour with the theme.
-     Red 4.98:1 · blue 5.73:1 · green 5.16:1 · hover red 6.59:1. */
-  --color-ludo-red-solid: #D32F2F;
-  --color-ludo-red-solid-hover: #B71C1C;
-  --color-ludo-blue-solid: #1565C0;
-  --color-ludo-blue-solid-hover: #0D47A1;
-  --color-ludo-green-solid: #2E7D32;
-  --color-ludo-green-solid-hover: #1B5E20;
+     Every board hue except indigo is too light for white text; flame is
+     3.04:1 straight out of the palette. These are the richer versions used
+     as button backgrounds, and they hold their value across both themes
+     because they are a backdrop for white, not a surface that inverts.
+     flame 5.20:1 · indigo 7.21:1 · mango 5.93:1 · orchid 5.78:1 · lemon 5.88:1 */
+  --color-ludo-flame-solid: #C2410C;
+  --color-ludo-flame-solid-hover: #9A3308;
+  --color-ludo-indigo-solid: #4B3FCF;
+  --color-ludo-indigo-solid-hover: #3A2FA8;
+  --color-ludo-mango-solid: #8A5A00;
+  --color-ludo-mango-solid-hover: #6B4600;
+  --color-ludo-orchid-solid: #A32BC2;
+  --color-ludo-orchid-solid-hover: #83229C;
+  --color-ludo-lemon-solid: #5E6B00;
+  --color-ludo-lemon-solid-hover: #475200;
+
+  /* Text colour for a bright board hue used as a fill (lemon, mango). */
+  --color-on-bright: #2E0F35;
 
   /* ── Semantic Tokens ── */
-  --color-primary: #E53935;
+  --color-primary: #C2410C;
   --color-primary-foreground: #FFFFFF;
 
-  --color-surface: #F7F8FA;
+  --color-surface: #FDF8EC;
   --color-surface-raised: #FFFFFF;
-  --color-surface-sunken: #EDEFF3;
-  --color-surface-overlay: rgba(11, 14, 20, 0.55);
+  --color-surface-sunken: #F4ECDC;
+  --color-surface-overlay: rgba(46, 15, 53, 0.55);
 
-  --color-ink: #17202A;
-  --color-ink-muted: #4B5563;
-  --color-ink-faint: #69717F;
+  --color-ink: #2E0F35;
+  --color-ink-muted: #5B4663;
+  --color-ink-faint: #7C6784;
 
-  --color-border: #E5E7EB;
-  --color-border-strong: #D1D5DB;
+  --color-border: #E8DEC9;
+  --color-border-strong: #D5C7AC;
 
-  --color-success: #2E7D32;
-  --color-warning: #8A6200;
-  --color-danger: #C62828;
-  --color-info: #1565C0;
+  --color-success: #5E6B00;
+  --color-warning: #8A5A00;
+  --color-danger: #C24314;
+  --color-info: #4B3FCF;
 
   /* ── Typography ── */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
@@ -115,60 +121,38 @@
    `@layer theme` defaults that `@theme` emits onto `:root`.
    ═══════════════════════════════════ */
 .dark {
-  --color-primary: #FF6F60;
-  --color-primary-foreground: #17202A;
+  --color-primary: #FF7A47;
+  --color-primary-foreground: #2E0F35;
 
-  --color-surface: #0B0E14;
-  --color-surface-raised: #151921;
-  --color-surface-sunken: #070910;
-  --color-surface-overlay: rgba(0, 0, 0, 0.7);
+  --color-surface: #140B1F;
+  --color-surface-raised: #221333;
+  --color-surface-sunken: #0C0614;
+  --color-surface-overlay: rgba(12, 6, 20, 0.72);
 
-  --color-ink: #F0F2F5;
-  --color-ink-muted: #A8B2C1;
-  --color-ink-faint: #7C8699;
+  --color-ink: #FFF4D6;
+  --color-ink-muted: #C4B0CE;
+  --color-ink-faint: #9A85A6;
 
-  --color-border: #232B38;
-  --color-border-strong: #374151;
+  --color-border: #3A2248;
+  --color-border-strong: #513163;
 
-  /* Brand hues lighten on dark surfaces so fills and text stay legible. */
-  --color-ludo-red: #FF6B62;
-  --color-ludo-red-light: #FF9E96;
-  --color-ludo-red-dark: #E53935;
+  /* On a plum ground the board hues already carry, so text variants revert
+     to (or brighten toward) the source colours rather than darkening.
+     Indigo is the exception: #4B3FCF on #221333 is 2.42:1, so it lifts. */
+  --color-ludo-flame-ink: #FF8A5C;
+  --color-ludo-mango-ink: #FFCE6B;
+  --color-ludo-indigo-ink: #9B92F0;
+  --color-ludo-orchid-ink: #E46CFF;
+  --color-ludo-lemon-ink: #F5FF67;
 
-  --color-ludo-yellow: #FBC02D;
-  --color-ludo-yellow-light: #FFF263;
-  --color-ludo-yellow-dark: #FFD54F;
+  --color-success: #F5FF67;
+  --color-warning: #FFCE6B;
+  --color-danger: #FF8A5C;
+  --color-info: #9B92F0;
 
-  --color-ludo-green: #66BB6A;
-  --color-ludo-green-light: #A5D6A7;
-  --color-ludo-green-dark: #43A047;
-
-  --color-ludo-blue: #64B5F6;
-  --color-ludo-blue-light: #A3D4FF;
-  --color-ludo-blue-dark: #1E88E5;
-
-  /* Deliberately not lightened: these carry white text. The lightened
-     brand red (#FF6B62) would drop white to 2.79:1. */
-  --color-ludo-red-solid: #D32F2F;
-  --color-ludo-red-solid-hover: #B71C1C;
-  --color-ludo-blue-solid: #1565C0;
-  --color-ludo-blue-solid-hover: #0D47A1;
-  --color-ludo-green-solid: #2E7D32;
-  --color-ludo-green-solid-hover: #1B5E20;
-
-  --color-ludo-red-ink: #FF8A80;
-  --color-ludo-yellow-ink: #FFD54F;
-  --color-ludo-green-ink: #81C784;
-  --color-ludo-blue-ink: #90CAF9;
-
-  --color-success: #81C784;
-  --color-warning: #FFD54F;
-  --color-danger: #FF8A80;
-  --color-info: #90CAF9;
-
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-elevated: 0 10px 25px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 10px 25px rgba(0, 0, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.45);
 
   color-scheme: dark;
 }
@@ -205,13 +189,13 @@
   }
 
   ::selection {
-    background-color: var(--color-ludo-red-solid);
+    background-color: var(--color-ludo-flame-solid);
     color: #fff;
   }
 
   /* Visible for keyboards, quiet for mice. */
   :focus-visible {
-    outline: 2px solid var(--color-ludo-blue);
+    outline: 2px solid var(--color-ludo-indigo);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -285,7 +269,7 @@
     position: absolute;
     inset: -2px;
     border-radius: inherit;
-    background-image: linear-gradient(135deg, #E53935, #FBC02D, #43A047, #1E88E5);
+    background-image: linear-gradient(135deg, #FF5C23, #FFCE6B, #E46CFF, #4B3FCF);
     z-index: -1;
     opacity: 0.6;
     transition: opacity 0.3s;
@@ -303,7 +287,7 @@
     z-index: 100;
     padding: 0.625rem 1.25rem;
     border-radius: var(--radius-xl);
-    background-color: var(--color-ludo-red-solid);
+    background-color: var(--color-ludo-flame-solid);
     color: #fff;
     font-size: 0.8125rem;
     font-weight: 700;
@@ -313,6 +297,108 @@
 
   .skip-link:focus {
     transform: translate(-50%, 0);
+  }
+
+
+  /* ═══════════════════════════════════
+     Dice-roll login stage
+
+     The sign-in page opens dim, with a die hanging on a cord. Pulling the
+     cord (or pressing the button, or simply tabbing into the form) rolls the
+     die and lights the room. The whole thing is decoration layered on top of
+     a form that works regardless — see DiceStage.tsx.
+     ═══════════════════════════════════ */
+  .dice-stage {
+    perspective: 900px;
+    perspective-origin: 50% 40%;
+  }
+
+  .dice {
+    position: relative;
+    width: 5.25rem;
+    height: 5.25rem;
+    transform-style: preserve-3d;
+    transition: transform 1500ms cubic-bezier(0.16, 0.9, 0.2, 1);
+    will-change: transform;
+  }
+
+  .dice-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.9rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 0.6rem;
+    gap: 0.15rem;
+    background-image: linear-gradient(145deg, #FFFBEF 0%, #FFF4D6 55%, #EFDFBB 100%);
+    border: 1px solid rgba(46, 15, 53, 0.18);
+    box-shadow: inset 0 -0.35rem 0.8rem rgba(46, 15, 53, 0.16);
+    backface-visibility: hidden;
+  }
+
+  .dice-pip {
+    width: 0.62rem;
+    height: 0.62rem;
+    border-radius: 999px;
+    align-self: center;
+    justify-self: center;
+    box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  /* The cord the die hangs from. */
+  .cord-line {
+    width: 2px;
+    border-radius: 999px;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(255, 244, 214, 0.15),
+      rgba(255, 244, 214, 0.55)
+    );
+  }
+
+  /* Warm pool of light that appears once the die has landed. */
+  .stage-glow {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: min(46rem, 130vw);
+    height: min(46rem, 130vw);
+    translate: -50% -38%;
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.75);
+    transition: opacity 900ms ease-out, transform 1200ms cubic-bezier(0.16, 0.9, 0.2, 1);
+    background-image: radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 206, 107, 0.34) 0%,
+      rgba(255, 92, 35, 0.16) 34%,
+      rgba(228, 108, 255, 0.07) 56%,
+      transparent 72%
+    );
+  }
+
+  .stage-lit .stage-glow {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Everything below the lamp starts dimmed and comes up with the light. */
+  .stage-dimmable {
+    opacity: 0.22;
+    filter: saturate(0.45);
+    transform: translateY(0.75rem);
+    transition:
+      opacity 700ms ease-out 150ms,
+      filter 700ms ease-out 150ms,
+      transform 700ms cubic-bezier(0.16, 0.9, 0.2, 1) 150ms;
+  }
+
+  .stage-lit .stage-dimmable {
+    opacity: 1;
+    filter: none;
+    transform: translateY(0);
   }
 
   .skeleton {
@@ -345,7 +431,7 @@
   .ludo-gradient {
     background-image: linear-gradient(
       135deg,
-      #E53935 0%, #FBC02D 25%, #43A047 50%, #1E88E5 75%, #E53935 100%
+      #FF5C23 0%, #FFCE6B 25%, #E46CFF 50%, #4B3FCF 75%, #FF5C23 100%
     );
     background-size: 300% 300%;
     animation: ludo-shift 6s ease infinite;
@@ -354,14 +440,14 @@
   .text-gradient-ludo {
     /* Painted first, so the text stays readable if background-clip is
        unsupported or forced-colors strips the gradient. */
-    color: var(--color-ludo-red);
-    background-image: linear-gradient(135deg, #E53935, #E8A200, #2E9B34, #1E88E5);
+    color: var(--color-ludo-flame-ink);
+    background-image: linear-gradient(135deg, #C2410C, #A85F00, #A32BC2, #4B3FCF);
     -webkit-background-clip: text;
     background-clip: text;
   }
 
   .dark .text-gradient-ludo {
-    background-image: linear-gradient(135deg, #FF6B62, #FFD54F, #66BB6A, #64B5F6);
+    background-image: linear-gradient(135deg, #FF8A5C, #FFCE6B, #E46CFF, #9B92F0);
   }
 
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
@@ -439,8 +525,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.4); }
-  50%      { box-shadow: 0 0 0 8px rgba(229, 57, 53, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 92, 35, 0.45); }
+  50%      { box-shadow: 0 0 0 8px rgba(255, 92, 35, 0); }
 }
 
 @keyframes float {
@@ -479,6 +565,24 @@
 
   .card-base:hover {
     transform: none;
+  }
+
+  .dice {
+    transition: none !important;
+  }
+
+  .stage-dimmable {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* The page simply arrives lit; no cord pull required. */
+  .stage-glow {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 

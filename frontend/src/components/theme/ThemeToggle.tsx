@@ -29,11 +29,11 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     >
       <Sun
         aria-hidden="true"
-        className="w-4 h-4 text-ludo-yellow-ink rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0"
+        className="w-4 h-4 text-ludo-mango-ink rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0"
       />
       <Moon
         aria-hidden="true"
-        className="absolute w-4 h-4 text-ludo-blue-ink rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
+        className="absolute w-4 h-4 text-ludo-indigo-ink rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
       />
       {/* The accessible name tracks the current theme, swapped by the same
           CSS rather than by React state. */}

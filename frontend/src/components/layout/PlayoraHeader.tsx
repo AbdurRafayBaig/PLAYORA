@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import {
-  Home, Radio, Calendar, BarChart3, Trophy, Users,
+  Home, Radio, Calendar, GitBranch, Trophy, Users,
   MessageCircle, Menu, X, LogIn,
 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
@@ -13,7 +13,7 @@ import { LudoMark } from "@/components/layout/LudoMark"
 import { cn } from "@/lib/utils"
 
 const iconMap: Record<string, React.ElementType> = {
-  Home, Radio, Calendar, BarChart3, Trophy, Users, MessageCircle,
+  Home, Radio, Calendar, GitBranch, Trophy, Users, MessageCircle,
 }
 
 export function PlayoraHeader() {
@@ -90,7 +90,7 @@ export function PlayoraHeader() {
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200",
                     active
-                      ? "bg-ludo-red/10 text-ludo-red-ink font-semibold"
+                      ? "bg-ludo-flame/10 text-ludo-flame-ink font-semibold"
                       : "text-ink-muted hover:text-ink hover:bg-ink-faint/10",
                   )}
                 >
@@ -106,7 +106,7 @@ export function PlayoraHeader() {
             <ThemeToggle />
             <Link
               href="/login"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ludo-red-solid text-white text-sm font-semibold hover:bg-ludo-red-solid-hover transition-colors duration-200 shadow-sm"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ludo-flame-solid text-white text-sm font-semibold hover:bg-ludo-flame-solid-hover transition-colors duration-200 shadow-sm"
             >
               <LogIn aria-hidden="true" className="w-4 h-4" />
               Login
@@ -159,7 +159,7 @@ export function PlayoraHeader() {
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
                       active
-                        ? "bg-ludo-red/10 text-ludo-red-ink font-semibold"
+                        ? "bg-ludo-flame/10 text-ludo-flame-ink font-semibold"
                         : "text-ink-muted hover:text-ink hover:bg-ink-faint/10",
                     )}
                   >
@@ -171,7 +171,7 @@ export function PlayoraHeader() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-ludo-red-solid text-white text-sm font-semibold mt-2"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-ludo-flame-solid text-white text-sm font-semibold mt-2"
               >
                 <LogIn aria-hidden="true" className="w-5 h-5" />
                 Login

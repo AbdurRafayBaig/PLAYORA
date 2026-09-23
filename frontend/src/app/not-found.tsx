@@ -24,10 +24,10 @@ export default function NotFound() {
         {/* A Ludo board square, one token short of home. */}
         <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden shadow-lg">
           <div className="w-full h-full grid grid-cols-2 grid-rows-2">
-            <div className="bg-ludo-red" />
-            <div className="bg-ludo-yellow" />
-            <div className="bg-ludo-blue" />
-            <div className="bg-ludo-green" />
+            <div className="bg-ludo-flame" />
+            <div className="bg-ludo-mango" />
+            <div className="bg-ludo-indigo" />
+            <div className="bg-ludo-lemon" />
           </div>
         </div>
 
@@ -51,7 +51,7 @@ export default function NotFound() {
               href={href}
               className="card-base p-4 flex flex-col items-center gap-2 text-xs font-semibold text-ink"
             >
-              <Icon aria-hidden="true" className="w-5 h-5 text-ludo-blue" />
+              <Icon aria-hidden="true" className="w-5 h-5 text-ludo-indigo" />
               {label}
             </Link>
           ))}
@@ -59,7 +59,7 @@ export default function NotFound() {
 
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-ludo-red-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-red-solid-hover transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-ludo-flame-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-flame-solid-hover transition-colors"
         >
           <Compass aria-hidden="true" className="w-4 h-4" />
           Back to {BRAND.name}

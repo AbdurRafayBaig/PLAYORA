@@ -7,7 +7,6 @@ import { PlayoraHeader } from "@/components/layout/PlayoraHeader"
 import { PlayoraFooter } from "@/components/layout/PlayoraFooter"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { BRAND, CONTACT } from "@/lib/constants"
-import { TOURNAMENT } from "@/lib/data"
 
 export const metadata: Metadata = {
   title: "Contact & Rules",
@@ -43,48 +42,55 @@ export default function ContactPage() {
           eyebrow="Support"
           title="Contact & Rules"
           description="Get in touch with the tournament organisers or review the official rules."
-          icon={<MessageCircle aria-hidden="true" className="w-5 h-5 text-ludo-blue-ink" />}
+          icon={<MessageCircle aria-hidden="true" className="w-5 h-5 text-ludo-indigo-ink" />}
         />
 
         {/* Contact cards — every channel here is actually actionable. The
             phone number and venue used to be plain text you could not tap. */}
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <li className="card-base border-t-4 border-t-ludo-red p-5 text-center flex flex-col gap-2">
-            <Mail aria-hidden="true" className="w-6 h-6 mx-auto text-ludo-red-ink" />
+          <li className="card-base border-t-4 border-t-ludo-flame p-5 text-center flex flex-col gap-2">
+            <Mail aria-hidden="true" className="w-6 h-6 mx-auto text-ludo-flame-ink" />
             <h2 className="text-sm font-bold text-ink">Email</h2>
             <p className="text-xs text-ink-muted">For general inquiries and support</p>
             <a
               href={`mailto:${CONTACT.email}`}
-              className="mt-auto text-xs font-semibold text-ludo-red-ink hover:underline break-words"
+              className="mt-auto text-xs font-semibold text-ludo-flame-ink hover:underline break-words"
             >
               {CONTACT.email}
             </a>
           </li>
 
-          <li className="card-base border-t-4 border-t-ludo-green p-5 text-center flex flex-col gap-2">
-            <Phone aria-hidden="true" className="w-6 h-6 mx-auto text-ludo-green-ink" />
-            <h2 className="text-sm font-bold text-ink">WhatsApp</h2>
-            <p className="text-xs text-ink-muted">Quick responses during tournament hours</p>
+          <li className="card-base border-t-4 border-t-ludo-lemon p-5 text-center flex flex-col gap-2">
+            <Phone aria-hidden="true" className="w-6 h-6 mx-auto text-ludo-lemon-ink" />
+            <h2 className="text-sm font-bold text-ink">Phone &amp; WhatsApp</h2>
+            <p className="text-xs text-ink-muted">Quickest during tournament hours</p>
+            {/* tel: on a phone dials; wa.me on desktop opens WhatsApp Web. */}
             <a
-              href={`https://wa.me/${CONTACT.whatsappLink}`}
+              href={`tel:+${CONTACT.phoneLink}`}
+              className="mt-auto text-xs font-semibold text-ludo-lemon-ink hover:underline"
+            >
+              {CONTACT.phone}
+            </a>
+            <a
+              href={`https://wa.me/${CONTACT.phoneLink}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-auto inline-flex items-center justify-center gap-1 text-xs font-semibold text-ludo-green-ink hover:underline"
+              className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-ludo-lemon-ink hover:underline"
             >
-              {CONTACT.whatsapp}
+              Message on WhatsApp
               <ExternalLink aria-hidden="true" className="w-2.5 h-2.5 opacity-70" />
             </a>
           </li>
 
-          <li className="card-base border-t-4 border-t-ludo-blue p-5 text-center flex flex-col gap-2">
-            <MapPin aria-hidden="true" className="w-6 h-6 mx-auto text-ludo-blue-ink" />
+          <li className="card-base border-t-4 border-t-ludo-indigo p-5 text-center flex flex-col gap-2">
+            <MapPin aria-hidden="true" className="w-6 h-6 mx-auto text-ludo-indigo-ink" />
             <h2 className="text-sm font-bold text-ink">Venue</h2>
             <p className="text-xs text-ink-muted">Main tournament venue</p>
             <a
               href={`https://maps.google.com/?q=${encodeURIComponent(CONTACT.venue)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-auto inline-flex items-center justify-center gap-1 text-xs font-semibold text-ludo-blue-ink hover:underline"
+              className="mt-auto inline-flex items-center justify-center gap-1 text-xs font-semibold text-ludo-indigo-ink hover:underline"
             >
               {CONTACT.venue}
               <ExternalLink aria-hidden="true" className="w-2.5 h-2.5 opacity-70" />
@@ -93,8 +99,8 @@ export default function ContactPage() {
         </ul>
 
         {/* Hours */}
-        <div className="card-base p-5 flex items-start gap-4 border-l-4 border-l-ludo-yellow">
-          <Clock aria-hidden="true" className="w-6 h-6 text-ludo-yellow-ink shrink-0 mt-0.5" />
+        <div className="card-base p-5 flex items-start gap-4 border-l-4 border-l-ludo-mango">
+          <Clock aria-hidden="true" className="w-6 h-6 text-ludo-mango-ink shrink-0 mt-0.5" />
           <div>
             <h2 className="text-sm font-bold text-ink">Tournament Hours</h2>
             <p className="text-xs text-ink-muted leading-relaxed mt-0.5">
@@ -110,7 +116,7 @@ export default function ContactPage() {
             id="rules-heading"
             className="text-lg font-bold text-ink tracking-tight flex items-center gap-2"
           >
-            <FileText aria-hidden="true" className="w-5 h-5 text-ludo-red-ink" />
+            <FileText aria-hidden="true" className="w-5 h-5 text-ludo-flame-ink" />
             Official Tournament Rules
           </h2>
 
@@ -119,7 +125,7 @@ export default function ContactPage() {
               <li key={rule} className="px-4 py-3 flex gap-3 transition-colors hover:bg-ink-faint/5">
                 <span
                   aria-hidden="true"
-                  className="w-6 h-6 shrink-0 mt-0.5 rounded-full bg-ludo-red/10 text-ludo-red-ink text-[10px] font-bold flex items-center justify-center"
+                  className="w-6 h-6 shrink-0 mt-0.5 rounded-full bg-ludo-flame/10 text-ludo-flame-ink text-[10px] font-bold flex items-center justify-center"
                 >
                   {i + 1}
                 </span>
@@ -131,9 +137,9 @@ export default function ContactPage() {
 
         {/* Notes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="card-base p-4 space-y-2 border-l-4 border-l-ludo-green">
+          <div className="card-base p-4 space-y-2 border-l-4 border-l-ludo-lemon">
             <h2 className="text-xs font-bold text-ink flex items-center gap-2">
-              <CheckCircle2 aria-hidden="true" className="w-4 h-4 text-ludo-green-ink" />
+              <CheckCircle2 aria-hidden="true" className="w-4 h-4 text-ludo-lemon-ink" />
               Fair Play
             </h2>
             <p className="text-[11px] text-ink-muted leading-relaxed">
@@ -142,9 +148,9 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="card-base p-4 space-y-2 border-l-4 border-l-ludo-yellow">
+          <div className="card-base p-4 space-y-2 border-l-4 border-l-ludo-mango">
             <h2 className="text-xs font-bold text-ink flex items-center gap-2">
-              <AlertTriangle aria-hidden="true" className="w-4 h-4 text-ludo-yellow-ink" />
+              <AlertTriangle aria-hidden="true" className="w-4 h-4 text-ludo-mango-ink" />
               Disputes
             </h2>
             <p className="text-[11px] text-ink-muted leading-relaxed">
@@ -163,7 +169,7 @@ export default function ContactPage() {
             </span>
           </p>
           <p className="text-sm font-bold text-ink">
-            {TOURNAMENT.organiser} — {TOURNAMENT.name}
+            Sports Society — Ludo Championship
           </p>
           <p className="text-xs text-ink-muted">
             Powered by {BRAND.name} · {BRAND.footer}

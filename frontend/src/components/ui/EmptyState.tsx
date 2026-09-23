@@ -7,6 +7,12 @@ interface EmptyStateProps {
   description: string
   action?: ReactNode
   className?: string
+  /**
+   * Heading level. Defaults to h2, which is correct when the empty state is
+   * the page's main content. Pass "h3" when it sits inside a section that
+   * already has its own h2, so the outline never skips a level.
+   */
+  as?: "h2" | "h3"
 }
 
 /**
@@ -20,6 +26,7 @@ export function EmptyState({
   description,
   action,
   className,
+  as: Heading = "h2",
 }: EmptyStateProps) {
   return (
     <div
@@ -34,7 +41,7 @@ export function EmptyState({
       >
         {icon}
       </div>
-      <h3 className="text-base font-bold text-ink">{title}</h3>
+      <Heading className="text-base font-bold text-ink">{title}</Heading>
       <p className="text-sm text-ink-muted max-w-sm leading-relaxed">{description}</p>
       {action && <div className="pt-2">{action}</div>}
     </div>

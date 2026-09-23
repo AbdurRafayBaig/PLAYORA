@@ -23,8 +23,8 @@ export default function GlobalError({
           justifyContent: "center",
           fontFamily:
             "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-          background: "#F7F8FA",
-          color: "#17202A",
+          background: "#FDF8EC",
+          color: "#2E0F35",
           padding: "1rem",
         }}
       >
@@ -41,20 +41,20 @@ export default function GlobalError({
               gridTemplateRows: "1fr 1fr",
             }}
           >
-            <span style={{ background: "#E53935" }} />
-            <span style={{ background: "#FBC02D" }} />
-            <span style={{ background: "#1E88E5" }} />
-            <span style={{ background: "#43A047" }} />
+            <span style={{ background: "#FF5C23" }} />
+            <span style={{ background: "#FFCE6B" }} />
+            <span style={{ background: "#4B3FCF" }} />
+            <span style={{ background: "#E46CFF" }} />
           </div>
           <h1 style={{ fontSize: "1.375rem", fontWeight: 800, margin: "0 0 0.5rem" }}>
             PLAYORA could not start
           </h1>
-          <p style={{ fontSize: "0.875rem", color: "#4B5563", lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontSize: "0.875rem", color: "#5B4663", lineHeight: 1.6, margin: 0 }}>
             A critical error stopped the application from loading. Reloading
             usually fixes it.
           </p>
           {error.digest && (
-            <p style={{ fontSize: "0.6875rem", color: "#69717F", marginTop: "0.75rem" }}>
+            <p style={{ fontSize: "0.6875rem", color: "#7C6784", marginTop: "0.75rem" }}>
               Reference: {error.digest}
             </p>
           )}
@@ -66,7 +66,7 @@ export default function GlobalError({
               padding: "0.75rem 1.5rem",
               borderRadius: 16,
               border: "none",
-              background: "#E53935",
+              background: "#C2410C",
               color: "#fff",
               fontSize: "0.875rem",
               fontWeight: 700,

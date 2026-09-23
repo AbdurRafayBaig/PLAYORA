@@ -30,7 +30,7 @@ export function PersonCard({
     <div
       className={cn(
         "relative rounded-2xl border border-border border-t-4 bg-surface-raised overflow-hidden shadow-md transition-shadow duration-300 hover:shadow-xl h-full",
-        isPrimary ? "border-t-ludo-red max-w-lg mx-auto" : "border-t-ludo-blue",
+        isPrimary ? "border-t-ludo-flame max-w-lg mx-auto" : "border-t-ludo-indigo",
       )}
     >
       <div
@@ -61,7 +61,7 @@ export function PersonCard({
             <div
               className={cn(
                 "w-full h-full flex items-center justify-center text-3xl font-extrabold",
-                isPrimary ? "text-ludo-red/40" : "text-ludo-blue/40",
+                isPrimary ? "text-ludo-flame/40" : "text-ludo-indigo/40",
               )}
               aria-hidden="true"
             >
@@ -83,7 +83,7 @@ export function PersonCard({
           <p
             className={cn(
               "text-xs sm:text-sm font-semibold",
-              isPrimary ? "text-ludo-red-ink" : "text-ludo-blue-ink",
+              isPrimary ? "text-ludo-flame-ink" : "text-ludo-indigo-ink",
             )}
           >
             {title}
@@ -120,8 +120,8 @@ export function PersonCard({
               className={cn(
                 "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold shadow transition-colors",
                 isPrimary
-                  ? "bg-ludo-red-solid hover:bg-ludo-red-solid-hover"
-                  : "bg-ludo-blue-solid hover:bg-ludo-blue-solid-hover",
+                  ? "bg-ludo-flame-solid hover:bg-ludo-flame-solid-hover"
+                  : "bg-ludo-indigo-solid hover:bg-ludo-indigo-solid-hover",
               )}
             >
               <svg aria-hidden="true" className="w-4 h-4 fill-current" viewBox="0 0 24 24">

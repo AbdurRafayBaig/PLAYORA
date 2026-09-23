@@ -2,12 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Swords, Trophy, BarChart3, Settings } from "lucide-react"
+import { Home, Swords, GitBranch, Users, Settings } from "lucide-react"
 import { TEAM_BOTTOM_NAV } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 const iconMap: Record<string, React.ElementType> = {
-  Home, Swords, Trophy, BarChart3, Settings,
+  Home, Swords, GitBranch, Users, Settings,
 }
 
 export function TeamBottomNav() {
@@ -34,7 +34,7 @@ export function TeamBottomNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "h-16 flex flex-col items-center justify-center gap-0.5 transition-colors duration-200",
-                  active ? "text-ludo-red-ink" : "text-ink-muted hover:text-ink",
+                  active ? "text-ludo-flame-ink" : "text-ink-muted hover:text-ink",
                 )}
               >
                 <span className="relative flex items-center justify-center">
@@ -62,7 +62,7 @@ export function TeamBottomNav() {
                   aria-hidden="true"
                   className={cn(
                     "h-0.5 w-6 rounded-full transition-colors",
-                    active ? "bg-ludo-red" : "bg-transparent",
+                    active ? "bg-ludo-flame" : "bg-transparent",
                   )}
                 />
               </Link>

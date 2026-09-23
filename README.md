@@ -1,9 +1,9 @@
-# 🎯 PLAYORA — Sports Tournament Management Portal
+# 🎲 PLAYORA — Ludo Tournament Management Portal
 
-A tournament operations platform for running Ludo championships end to end:
-live match tracking, fixtures, standings, results, an admin console, and a
-team portal — built with **Next.js 16 (App Router)**, **TypeScript** and
-**Tailwind CSS v4**.
+A single-elimination Ludo tournament, run end to end from one console: the
+organiser registers teams and issues their logins, draws the bracket, assigns
+tables and kickoff times, publishes each round, and runs matches live.
+Built with **Next.js 16 (App Router)**, **TypeScript** and **Tailwind CSS v4**.
 
 ![PLAYORA](frontend/public/og-image.png)
 
@@ -15,22 +15,49 @@ PLAYORA covers three audiences from one codebase:
 
 | Surface | Who it is for | What they get |
 | --- | --- | --- |
-| **Public hub** | Spectators, players | Live matches, fixtures, standings, results, rules and contact |
-| **Admin console** | Organisers, referees | Teams, players, fixtures, a scorer view, venues, disputes, announcements, reports, roles and an audit log |
-| **Team portal** | Team captains | Their matches, results, standing, roster and notifications |
+| **Public hub** | Spectators, players | Live matches with a running clock, published fixtures, the knockout bracket, results, rules and contact |
+| **Admin console** | The organiser | Create the tournament, register teams (logins issued automatically), draw the bracket, assign tables and times, publish rounds, run matches live |
+| **Team portal** | Team captains | Their own fixtures, the bracket, notifications — **read-only** |
 
-The visual language borrows from a Ludo board — **red**, **yellow**, **green**
-and **blue** — over a token-driven design system with full light and dark
-themes.
+### How a tournament runs
+
+1. **Create** the tournament (name and venue — the Cafe).
+2. **Register teams.** Each team is issued a Team ID and an 8-character
+   password on the spot; the organiser reads them out at the desk, or prints
+   the whole credential sheet.
+3. **Draw.** One tap pairs every team at random and locks the field. Round
+   sizes halve automatically: **48 -> 24 -> 12 -> 6 -> 3 -> 2 -> 1**. An odd
+   round gives one team a bye.
+4. **Assign** a table and kickoff time to every match.
+5. **Publish.** Only then do fixtures become visible to teams and to the
+   public — and publishing is what notifies the teams.
+6. **Run.** Start each match (it goes live with a clock), record who advanced,
+   then advance the round. Repeat to a champion.
+
+### No points table — on purpose
+
+Lose once and you are out, so a league table carries no information: every
+surviving team has won every match it played, and they would all sit level on
+points. PLAYORA shows a **bracket** instead, which answers the question people
+actually have — how far did each team get?
+
+The visual language is a Ludo board: **Atomic Orange**, **Melted Mango**,
+**Indigo Flame** and **Electric Orchid** over **Deep Plum** and **Vanilla**,
+with full light and dark themes.
 
 ---
 
 ## ✨ Highlights
 
+- **Ships empty, honestly.** No seed data, no invented teams. Every page shows
+  a real empty state until the organiser sets the tournament up.
+- **Animated sign-in.** The login page opens dim with a die on a cord; pull it
+  and the die tumbles, lands, and the light comes up on the form. Skipped
+  entirely under `prefers-reduced-motion`, and the form works whether or not
+  you ever touch the animation.
 - **Mobile first, verified.** No page scrolls horizontally at 320px. The
   admin console is a drawer on phones, the team portal has a bottom nav that
-  respects safe-area insets, and the standings table pins rank and team while
-  the stats scroll.
+  respects safe-area insets, and the bracket scrolls round by round.
 - **Accessible by default.** Skip link, visible focus rings, `aria-current`,
   Escape-to-close and focus return on drawers, semantic tables and landmarks,
   `prefers-reduced-motion` support, and WCAG AA contrast in both themes
@@ -39,8 +66,9 @@ themes.
   can add it to their home screen for the day.
 - **SEO ready.** Per-page titles, descriptions, canonicals and Open Graph
   cards; `robots.txt` and `sitemap.xml` generated from the route list.
-- **One source of truth.** Every surface reads the same dataset, so the
-  landing page, standings, admin console and team portal never disagree.
+- **One source of truth.** The public hub, the admin console and the team
+  portal all read the same store, so they can never disagree about a score,
+  a table or who is still in.
 
 ---
 
@@ -51,8 +79,8 @@ Ludo_System/
 ├── frontend/                  # Next.js 16 · React 19 · TypeScript · Tailwind v4
 │   ├── src/
 │   │   ├── app/               # App Router routes (public, /admin, /team)
-│   │   ├── components/        # cards, layout shells, matches, ui primitives
-│   │   └── lib/               # data, types, constants, utils
+│   │   ├── components/        # cards, layout shells, tournament, ui primitives
+│   │   └── lib/tournament/    # types, knockout engine, store
 │   ├── public/                # icons, OG image, team photos
 │   └── .env.example
 └── docs/                      # PRD, UI system, architecture, DB, API reference
@@ -83,17 +111,23 @@ npm run dev
 
 Open <http://localhost:3000>.
 
-### Demo logins
+### Signing in
 
-There is no backend yet, so `/login` validates against demo credentials and
-routes you to the right portal:
+**Admin** credentials come from the environment, never from the repository.
+Copy `.env.example` to `.env.local` (gitignored) and set:
 
-| Portal | Identifier | Password |
-| --- | --- | --- |
-| Team | `T001` | `playora` |
-| Admin | `admin@playora.app` | `playora` |
+```
+NEXT_PUBLIC_ADMIN_EMAIL=...
+NEXT_PUBLIC_ADMIN_PASSWORD=...
+```
 
-The login page has a **Fill demo credentials** button.
+**Teams** sign in with the Team ID and password PLAYORA generates when the
+organiser registers them. There are none until a tournament is set up.
+
+> **Warning:** both checks happen in the browser, so `NEXT_PUBLIC_*` values are
+> readable from the JS bundle. This keeps secrets out of git; it does not make
+> the console secure. Move authentication to Django before running a real
+> event, and never reuse a password from anywhere else.
 
 ---
 
@@ -139,28 +173,36 @@ npm run check      # eslint + tsc --noEmit + next build
 
 Each release of this branch was verified with:
 
-- `next build` — all 33 routes prerender, no type errors
+- `next build` — every route prerenders, no type errors
 - `eslint` — clean, including the React 19 hooks rules
 - every route returning 200, and the 404 page rendering for unknown paths
+- a 35-step end-to-end run of a real tournament — create it, register six
+  teams, draw, schedule, publish, play every round, crown a champion, then
+  sign in as that team and confirm the portal is read-only
 - an automated pass at 320px and 390px confirming no horizontal overflow
-- a contrast and semantics sweep over 14 routes in **both** themes reporting
-  zero issues (accessible names, alt text, form labels, duplicate ids,
-  heading order, landmarks, computed contrast)
+- a contrast and semantics sweep in **both** themes reporting zero issues
+  (accessible names, alt text, form labels, duplicate ids, heading order,
+  landmarks, computed contrast)
 
 ---
 
 ## 🔌 Connecting the real backend
 
-The UI reads from `frontend/src/lib/data.ts`, which exports selectors
-(`getStandings()`, `getLiveMatches()`, `getMatchesForTeam()` …) rather than
-raw arrays. Pages never touch the arrays directly, so swapping in the API is
-a matter of turning those selectors into fetches — the component tree does
-not change. Types live in `frontend/src/lib/types.ts`; the endpoint contract
-is in [`docs/06_API_Reference.md`](docs/06_API_Reference.md).
+State currently lives in the browser's localStorage
+(`frontend/src/lib/tournament/store.tsx`). **Two limits follow from that, and
+both need the Django backend to fix:**
 
-Admin screens that write data show a short notice explaining they are
-read-only until the API is connected, rather than presenting buttons that
-silently do nothing.
+- A team login created on the organiser's laptop does not exist on a
+  captain's phone. Cross-device access is not possible without a server.
+- Passwords are compared in the browser, so they are not secret.
+
+The app is shaped to port cleanly. Every store action (`addTeam`,
+`publishRound`, `recordWinner`, `advanceRound` and the rest) maps one-to-one
+onto a REST endpoint, and all the bracket maths already lives in
+`frontend/src/lib/tournament/engine.ts` as pure, storage-free functions that
+can be reimplemented in Python without reference to the UI. Types are in
+`tournament/types.ts`; the endpoint contract is in
+[`docs/06_API_Reference.md`](docs/06_API_Reference.md).
 
 ---
 
@@ -168,8 +210,10 @@ silently do nothing.
 
 Built by the PLAYORA team under **Tynovate**:
 
-- **Abdur Rafay Baig** — Founder & Lead Architect ([LinkedIn](https://www.linkedin.com/in/irafaybaig/))
-- **Hassaan Ahmad** — CEO & Founder
-- **Zoraiz** — Product & Operations Lead
+- **Abdur Rafay Baig** — Full Team Lead Architect, backend and frontend ([LinkedIn](https://www.linkedin.com/in/irafaybaig/))
+- **Wajdan Ali** — Mobile Optimization
+- **Ammar Ahmad** — Backend Architect
+
+Questions or problems: **f233046@cfd.nu.edu.pk** · **0300 7562623**
 
 Repository: <https://github.com/AbdurRafayBaig/PLAYORA>

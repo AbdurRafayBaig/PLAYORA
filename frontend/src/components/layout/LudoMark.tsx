@@ -1,24 +1,30 @@
 import { cn } from "@/lib/utils"
 
 /**
- * The PLAYORA mark: a Ludo board's four home squares.
+ * The PLAYORA mark: a Ludo board seen from above.
  *
- * This markup was copy-pasted into six components, which meant six places to
- * update and a real chance of them drifting apart.
+ * Four home bases in the corners, the cross-shaped track running between
+ * them as negative space, and the centre goal as a diamond. Kept in sync
+ * with the generated favicon and OG image — same geometry, same colours.
+ *
+ * Inline SVG rather than an <img>: crisp at any size, no extra request, and
+ * it cannot render as a broken image if the asset is missing.
  */
 export function LudoMark({ className }: { className?: string }) {
   return (
-    <span
+    <svg
+      viewBox="0 0 64 64"
       aria-hidden="true"
-      className={cn(
-        "grid grid-cols-2 grid-rows-2 rounded-xl overflow-hidden",
-        className,
-      )}
+      focusable="false"
+      className={cn("shrink-0", className)}
     >
-      <span className="bg-ludo-red" />
-      <span className="bg-ludo-yellow" />
-      <span className="bg-ludo-blue" />
-      <span className="bg-ludo-green" />
-    </span>
+      <rect width="64" height="64" rx="15" fill="#1C2459" />
+      <rect x="6" y="6" width="22" height="22" rx="6" fill="#FF5C23" />
+      <rect x="36" y="6" width="22" height="22" rx="6" fill="#FFCE6B" />
+      <rect x="6" y="36" width="22" height="22" rx="6" fill="#4B3FCF" />
+      <rect x="36" y="36" width="22" height="22" rx="6" fill="#E46CFF" />
+      <path d="M32 22 L42 32 L32 42 L22 32 Z" fill="#FFF4D6" />
+      <circle cx="32" cy="32" r="3.2" fill="#1C2459" />
+    </svg>
   )
 }
