@@ -176,7 +176,7 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
             <Link
               href="/live"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-ludo-red text-white text-xs font-semibold shadow hover:bg-ludo-red-dark transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-ludo-red-solid text-white text-xs font-semibold shadow hover:bg-ludo-red-solid-hover transition-colors"
             >
               <Radio aria-hidden="true" className="w-4 h-4" />
               Live Matches

@@ -46,7 +46,7 @@ export default function Error({
           <button
             type="button"
             onClick={reset}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-ludo-red text-white font-bold text-sm shadow-lg hover:bg-ludo-red-dark transition-colors cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-ludo-red-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-red-solid-hover transition-colors cursor-pointer"
           >
             <RotateCcw aria-hidden="true" className="w-4 h-4" />
             Try again

@@ -106,7 +106,7 @@ export function PlayoraHeader() {
             <ThemeToggle />
             <Link
               href="/login"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ludo-red text-white text-sm font-semibold hover:bg-ludo-red-dark transition-colors duration-200 shadow-sm"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ludo-red-solid text-white text-sm font-semibold hover:bg-ludo-red-solid-hover transition-colors duration-200 shadow-sm"
             >
               <LogIn aria-hidden="true" className="w-4 h-4" />
               Login
@@ -171,7 +171,7 @@ export function PlayoraHeader() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-ludo-red text-white text-sm font-semibold mt-2"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-ludo-red-solid text-white text-sm font-semibold mt-2"
               >
                 <LogIn aria-hidden="true" className="w-5 h-5" />
                 Login

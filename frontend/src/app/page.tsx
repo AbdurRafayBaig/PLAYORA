@@ -103,7 +103,7 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-4">
                 <Link
                   href="/live"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-ludo-red text-white font-bold text-sm shadow-lg hover:bg-ludo-red-dark hover:shadow-xl transition-all duration-300 group"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-ludo-red-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-red-solid-hover hover:shadow-xl transition-all duration-300 group"
                 >
                   <Radio aria-hidden="true" className="w-4 h-4" />
                   Watch Live Matches
@@ -184,7 +184,7 @@ export default function HomePage() {
                 action={
                   <Link
                     href="/fixtures"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ludo-blue text-white text-xs font-semibold hover:bg-ludo-blue-dark transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ludo-blue-solid text-white text-xs font-semibold hover:bg-ludo-blue-solid-hover transition-colors"
                   >
                     <Calendar aria-hidden="true" className="w-4 h-4" />
                     See fixtures
@@ -332,9 +332,12 @@ export default function HomePage() {
                   standings, and stay updated on tournament progress.
                 </p>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2">
+                  {/* This panel is dark in both themes, so the label is a
+                      fixed ink value. `text-ink` inverts to near-white in
+                      dark mode and left white-on-white at 1.12:1. */}
                   <Link
                     href="/login"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white text-ink font-bold text-sm shadow-lg hover:bg-white/90 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white text-[#17202A] font-bold text-sm shadow-lg hover:bg-white/90 transition-colors"
                   >
                     Team Login
                     <ArrowRight aria-hidden="true" className="w-4 h-4" />

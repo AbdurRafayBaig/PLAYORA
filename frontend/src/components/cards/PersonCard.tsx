@@ -120,8 +120,8 @@ export function PersonCard({
               className={cn(
                 "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold shadow transition-colors",
                 isPrimary
-                  ? "bg-ludo-red hover:bg-ludo-red-dark"
-                  : "bg-ludo-blue hover:bg-ludo-blue-dark",
+                  ? "bg-ludo-red-solid hover:bg-ludo-red-solid-hover"
+                  : "bg-ludo-blue-solid hover:bg-ludo-blue-solid-hover",
               )}
             >
               <svg aria-hidden="true" className="w-4 h-4 fill-current" viewBox="0 0 24 24">

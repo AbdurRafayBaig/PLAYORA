@@ -251,8 +251,8 @@ export default function LoginPage() {
               className={cn(
                 "w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition-colors shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-wait",
                 isTeam
-                  ? "bg-ludo-red hover:bg-ludo-red-dark"
-                  : "bg-ludo-blue hover:bg-ludo-blue-dark",
+                  ? "bg-ludo-red-solid hover:bg-ludo-red-solid-hover"
+                  : "bg-ludo-blue-solid hover:bg-ludo-blue-solid-hover",
               )}
             >
               {pending ? (

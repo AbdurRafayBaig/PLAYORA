@@ -62,7 +62,7 @@ export default function LivePage() {
             action={
               <Link
                 href="/fixtures"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ludo-blue text-white text-xs font-semibold hover:bg-ludo-blue-dark transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ludo-blue-solid text-white text-xs font-semibold hover:bg-ludo-blue-solid-hover transition-colors"
               >
                 <Calendar aria-hidden="true" className="w-4 h-4" />
                 View fixtures

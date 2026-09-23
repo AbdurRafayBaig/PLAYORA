@@ -84,7 +84,7 @@ export function FilteredMatchList({
                 className={cn(
                   "shrink-0 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-colors cursor-pointer",
                   selected
-                    ? "bg-ludo-red text-white border-ludo-red"
+                    ? "bg-ludo-red-solid text-white border-ludo-red-solid"
                     : "bg-surface-raised text-ink-muted border-border hover:text-ink hover:bg-ink-faint/10",
                 )}
               >

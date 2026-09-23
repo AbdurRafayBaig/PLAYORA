@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
             <Bell aria-hidden="true" className="w-4 h-4 text-ink-muted" />
             <span
               aria-hidden="true"
-              className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-ludo-red text-white text-[9px] font-bold flex items-center justify-center"
+              className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-ludo-red-solid text-white text-[9px] font-bold flex items-center justify-center"
             >
               {openDisputes.length}
             </span>

@@ -92,7 +92,7 @@ export default function TeamNotificationsPage() {
                       <h3 className="text-sm font-bold text-ink">
                         {n.title}
                         {!n.read && (
-                          <span className="ml-2 align-middle px-1.5 py-0.5 text-[9px] font-bold rounded bg-ludo-red text-white">
+                          <span className="ml-2 align-middle px-1.5 py-0.5 text-[9px] font-bold rounded bg-ludo-red-solid text-white">
                             New
                           </span>
                         )}

@@ -51,7 +51,7 @@ export default function TeamStandingPage() {
         <span className="flex items-center gap-2 min-w-0">
           <span className="text-sm font-bold text-ink truncate">{t.name}</span>
           {t.id === team.id && (
-            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-ludo-red text-white shrink-0">
+            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-ludo-red-solid text-white shrink-0">
               You
             </span>
           )}

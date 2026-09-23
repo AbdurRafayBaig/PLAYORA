@@ -59,7 +59,7 @@ export default function NotFound() {
 
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-ludo-red text-white font-bold text-sm shadow-lg hover:bg-ludo-red-dark transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-ludo-red-solid text-white font-bold text-sm shadow-lg hover:bg-ludo-red-solid-hover transition-colors"
         >
           <Compass aria-hidden="true" className="w-4 h-4" />
           Back to {BRAND.name}

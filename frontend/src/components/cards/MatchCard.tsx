@@ -161,7 +161,7 @@ export function MatchCard({
             className={cn(
               "w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-[10px] font-extrabold",
               isLive
-                ? "bg-ludo-red text-white animate-pulse-glow"
+                ? "bg-ludo-red-solid text-white animate-pulse-glow"
                 : "bg-ink-faint/10 text-ink-muted",
             )}
           >
