@@ -207,10 +207,13 @@ both need the Django backend to fix:**
 The app is shaped to port cleanly. Every store action (`addTeam`,
 `publishRound`, `recordWinner`, `advanceRound` and the rest) maps one-to-one
 onto a REST endpoint, and all the bracket maths already lives in
-`frontend/src/lib/tournament/engine.ts` as pure, storage-free functions that
-can be reimplemented in Python without reference to the UI. Types are in
-`tournament/types.ts`; the endpoint contract is in
-[`docs/06_API_Reference.md`](docs/06_API_Reference.md).
+`frontend/src/lib/tournament/engine.ts` as pure, storage-free functions.
+
+**[`docs/07_Database_Implementation.md`](docs/07_Database_Implementation.md)
+is the step-by-step plan** — PostgreSQL on Neon, the full Prisma schema, the
+constraints that keep a bracket honest under concurrent writes, the endpoint
+map, and a build order where each step leaves the app working. Roughly two
+focused days. It also covers what changes if Django is a hard requirement.
 
 ---
 
