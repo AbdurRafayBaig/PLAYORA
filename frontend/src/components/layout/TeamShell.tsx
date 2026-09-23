@@ -11,6 +11,7 @@ import { LudoMark } from "@/components/layout/LudoMark"
 import { BRAND, TEAM_NAV } from "@/lib/constants"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
 import { initials } from "@/lib/tournament/engine"
+import { SignInGate } from "@/components/layout/SignInGate"
 import { cn } from "@/lib/utils"
 
 const iconMap: Record<string, React.ElementType> = {
@@ -19,15 +20,32 @@ const iconMap: Record<string, React.ElementType> = {
 
 export function TeamShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { notices } = useTournament()
+  const { ready, notices } = useTournament()
   const team = useSignedInTeam()
-  const unread = notices.filter((n) => n.teamId === null || n.teamId === team?.id).length
+  // Unread only — a badge that never clears is just noise after the first
+  // time you read it.
+  const unread = notices.filter(
+    (n) => !n.read && (n.teamId === null || n.teamId === team?.id),
+  ).length
 
   const isActive = (href: string) =>
     pathname === href || (href !== "/team" && pathname.startsWith(`${href}/`))
 
   const activeLabel =
     TEAM_NAV.find((i) => isActive(i.href))?.label ?? "Team Portal"
+
+  if (!ready) {
+    return <div className="min-h-dvh bg-surface" aria-busy="true" />
+  }
+
+  if (!team) {
+    return (
+      <SignInGate
+        title="Team sign-in required"
+        description="Sign in with the team ID and password the organiser gave you at registration to see your fixtures."
+      />
+    )
+  }
 
   return (
     <div className="flex min-h-dvh bg-surface">
@@ -51,12 +69,12 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
               aria-hidden="true"
               className="w-10 h-10 shrink-0 rounded-xl bg-ludo-flame/10 flex items-center justify-center text-sm font-bold text-ludo-flame-ink"
             >
-              {team ? initials(team.name) : "—"}
+              {initials(team.name)}
             </span>
             <span className="min-w-0">
-              <span className="block text-sm font-bold text-ink truncate">{team?.name ?? "Not signed in"}</span>
+              <span className="block text-sm font-bold text-ink truncate">{team.name}</span>
               <span className="block text-[10px] text-ink-muted">
-                {team ? `Team ID: ${team.code}` : "Sign in to see your matches"}
+                Team ID: {team.code}
               </span>
             </span>
           </div>
@@ -123,7 +141,7 @@ export function TeamShell({ children }: { children: React.ReactNode }) {
                 {activeLabel}
               </span>
               <span className="block text-[10px] text-ink-muted mt-0.5 truncate">
-                {team?.name ?? "Team Portal"}
+                {team.name}
               </span>
             </span>
           </Link>

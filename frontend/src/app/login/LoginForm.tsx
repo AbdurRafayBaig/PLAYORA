@@ -16,7 +16,7 @@ type Role = "team" | "admin"
 export function LoginForm() {
   const router = useRouter()
   const formId = useId()
-  const { signInTeam, teams } = useTournament()
+  const { signInTeam, signInAdmin, teams } = useTournament()
 
   const [role, setRole] = useState<Role>("team")
   const [identifier, setIdentifier] = useState("")
@@ -90,6 +90,7 @@ export function LoginForm() {
       setError("Those admin credentials were not recognised.")
       return
     }
+    signInAdmin()
     router.push("/admin")
   }
 

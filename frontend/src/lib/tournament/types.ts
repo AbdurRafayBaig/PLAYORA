@@ -80,6 +80,7 @@ export interface TeamNotice {
   body: string
   at: string
   tone: 'info' | 'success' | 'warning'
+  read: boolean
 }
 
 export interface TournamentState {
@@ -89,4 +90,12 @@ export interface TournamentState {
   notices: TeamNotice[]
   /** Team id of the captain currently signed into the team portal. */
   signedInTeamId: string | null
+  /**
+   * Whether the organiser has signed in.
+   *
+   * A client-side flag gating a client-side console — it keeps the panel
+   * from being reachable by typing the URL, which is what it is for. It is
+   * not a security boundary; that arrives with the Django session.
+   */
+  adminSignedIn: boolean
 }

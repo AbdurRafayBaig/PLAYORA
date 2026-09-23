@@ -11,7 +11,9 @@ import { ADMIN_NAV_GROUPS, BRAND } from "@/lib/constants"
 import { LudoMark } from "@/components/layout/LudoMark"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import { cn } from "@/lib/utils"
+import { useTournament } from "@/lib/tournament/store"
 import { useStoredFlag } from "@/lib/useStoredFlag"
+import { SignInGate } from "@/components/layout/SignInGate"
 
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard, Users, Calendar, Radio, GitBranch, Settings,
@@ -28,6 +30,7 @@ const COLLAPSE_KEY = "playora:admin-sidebar-collapsed"
  */
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { ready, adminSignedIn, signOutAdmin } = useTournament()
   const [collapsed, setCollapsed] = useStoredFlag(COLLAPSE_KEY)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [lastPath, setLastPath] = useState(pathname)
@@ -128,19 +131,34 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <ExternalLink aria-hidden="true" className="w-5 h-5 shrink-0" />
         {showLabels ? <span>View public site</span> : <span className="sr-only">View public site</span>}
       </Link>
-      <Link
-        href="/login"
+      <button
+        type="button"
+        onClick={signOutAdmin}
         title={!showLabels ? "Log out" : undefined}
         className={cn(
-          "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-ink-muted hover:text-ludo-flame-ink hover:bg-ludo-flame/5 transition-colors",
+          "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-ink-muted hover:text-ludo-flame-ink hover:bg-ludo-flame/5 transition-colors cursor-pointer",
           !showLabels && "justify-center",
         )}
       >
         <LogOut aria-hidden="true" className="w-5 h-5 shrink-0" />
         {showLabels ? <span>Log out</span> : <span className="sr-only">Log out</span>}
-      </Link>
+      </button>
     </div>
   )
+
+  // Nothing renders until we know; then either the gate or the console.
+  if (!ready) {
+    return <div className="min-h-dvh bg-surface" aria-busy="true" />
+  }
+
+  if (!adminSignedIn) {
+    return (
+      <SignInGate
+        title="Admin sign-in required"
+        description="The tournament console is only available to the organiser. Sign in with your admin email and password to continue."
+      />
+    )
+  }
 
   return (
     <div className="flex min-h-dvh bg-surface">

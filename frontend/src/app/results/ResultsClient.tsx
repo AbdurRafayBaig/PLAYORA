@@ -67,7 +67,8 @@ export function ResultsClient() {
                 {done
                   .filter((m) => m.roundIndex === index)
                   .map((m) => (
-                    <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(index)} />
+                    <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(index)}
+                    venue={tournament?.venue} />
                   ))}
               </div>
             </section>

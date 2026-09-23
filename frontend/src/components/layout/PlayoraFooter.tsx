@@ -26,8 +26,8 @@ export function PlayoraFooter() {
               </span>
             </div>
             <p className="text-xs text-ink-muted leading-relaxed max-w-xs">
-              {BRAND.tagline}. A complete tournament operations system for
-              managing teams, fixtures, live matches, standings, and progression.
+              {BRAND.tagline}. Runs a single-elimination Ludo championship end
+              to end — registration, the draw, live matches and the bracket.
             </p>
           </div>
 

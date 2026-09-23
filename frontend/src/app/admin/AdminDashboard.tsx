@@ -244,6 +244,7 @@ function RunningPhase() {
                 match={m}
                 teams={teams}
                 roundName={tournament.rounds[m.roundIndex]?.name ?? ""}
+                venue={tournament.venue}
               />
             ))}
           </div>
@@ -257,7 +258,8 @@ function RunningPhase() {
       >
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
           {inRound.map((m) => (
-            <MatchCard key={m.id} match={m} teams={teams} roundName={round?.name ?? ""} />
+            <MatchCard key={m.id} match={m} teams={teams} roundName={round?.name ?? ""}
+            venue={tournament.venue} />
           ))}
         </div>
       </Panel>

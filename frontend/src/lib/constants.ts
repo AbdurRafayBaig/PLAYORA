@@ -90,44 +90,56 @@ export const TEAM_BOTTOM_NAV: readonly NavItem[] = [
 ]
 
 // ── The team behind PLAYORA (About page) ──
+// Ordered by scope of ownership. `focus` is what each person is actually
+// responsible for; `skills` is the toolset. Keeping those separate stops the
+// cards reading as a list of buzzwords.
 export const TEAM_MEMBERS = [
   {
     name: 'Abdur Rafay Baig',
     role: 'Full Team Lead Architect',
-    title: 'Backend & Frontend — all functionality',
-    bio: 'Owns PLAYORA end to end: the tournament engine, the knockout bracket logic, the API design and database schema, and the entire interface from the design system up. Every feature in this portal was architected and built here.',
+    title: 'Backend and frontend — end to end',
+    bio: 'Leads PLAYORA and built it. Designed the knockout engine and data model, the REST contract the Django service implements, and the entire interface from the design tokens upward.',
     photo: '/abdur-rafay.jpeg',
     linkedin: 'https://www.linkedin.com/in/irafaybaig/',
-    skills: [
-      'System Architecture',
-      'Next.js',
-      'TypeScript',
-      'Django',
-      'PostgreSQL',
-      'API Design',
-      'UI/UX Design',
-      'WebSockets',
+    focus: [
+      'Tournament engine — bracket generation, bye handling, round progression',
+      'Data model and the REST contract for the Django service',
+      'Design system, component library and the full interface',
+      'Accessibility and performance standards across the product',
     ],
+    skills: ['Next.js', 'TypeScript', 'Django', 'PostgreSQL', 'REST', 'WebSockets', 'UI/UX'],
     isPrimary: true,
-  },
-  {
-    name: 'Wajdan Ali',
-    role: 'Mobile Optimization',
-    title: 'Responsive & device experience',
-    bio: 'Makes PLAYORA work on the phone in a captain’s hand — responsive layouts, touch targets, safe-area handling and the on-court views referees actually use during a match.',
-    photo: '/placeholder-avatar.svg',
-    linkedin: '',
-    skills: ['Responsive Design', 'Mobile UX', 'Performance', 'Testing'],
-    isPrimary: false,
   },
   {
     name: 'Ammar Ahmad',
     role: 'Backend Architect',
-    title: 'Data & services',
-    bio: 'Designs the server side that PLAYORA runs on — data modelling, the REST layer, match-state integrity and the real-time channel that pushes live scores to every screen.',
+    title: 'Data and services',
+    bio: 'Owns the server side PLAYORA runs on — the schema, the API surface, and the integrity rules that keep a match result from ever contradicting the bracket.',
     photo: '/placeholder-avatar.svg',
     linkedin: '',
-    skills: ['Django', 'PostgreSQL', 'REST APIs', 'WebSockets'],
+    focus: [
+      'Database schema and migrations',
+      'REST endpoints and authentication',
+      'Match-state integrity and audit trail',
+      'Real-time channel for live scores',
+    ],
+    skills: ['Django', 'PostgreSQL', 'REST', 'WebSockets'],
+    isPrimary: false,
+  },
+  {
+    name: 'Wajdan Ali',
+    role: 'Mobile Optimization',
+    title: 'Device and field experience',
+    bio: 'Makes PLAYORA work on the phone in a captain’s hand and the referee’s screen beside the table — the two places it is actually used on tournament day.',
+    photo: '/placeholder-avatar.svg',
+    linkedin: '',
+    focus: [
+      'Responsive layouts down to 320px',
+      'Touch targets, safe-area handling and one-handed reach',
+      'On-court referee and scoring views',
+      'Cross-device testing and load performance',
+    ],
+    skills: ['Responsive Design', 'Mobile UX', 'Performance', 'QA'],
     isPrimary: false,
   },
 ] as const

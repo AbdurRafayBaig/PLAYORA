@@ -4,7 +4,6 @@ import { Swords, CalendarOff } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { MatchCard } from "@/components/tournament/MatchCard"
-import { NotSignedIn } from "@/components/tournament/NoTournament"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
 import { pluralise } from "@/lib/utils"
 
@@ -20,13 +19,9 @@ export function TeamMatchesClient() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="p-4 sm:p-6 max-w-4xl mx-auto">
-        <NotSignedIn />
-      </div>
-    )
-  }
+  // TeamShell gates the whole portal, so `team` is present here. This
+  // guard only narrows the type.
+  if (!team) return null
 
   const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
 
@@ -77,6 +72,7 @@ export function TeamMatchesClient() {
                     match={m}
                     teams={teams}
                     roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue}
                     highlightTeamId={team.id}
                   />
                 ))}
@@ -96,6 +92,7 @@ export function TeamMatchesClient() {
                     match={m}
                     teams={teams}
                     roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue}
                     highlightTeamId={team.id}
                   />
                 ))}
@@ -119,6 +116,7 @@ export function TeamMatchesClient() {
                     match={m}
                     teams={teams}
                     roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue}
                     highlightTeamId={team.id}
                   />
                 ))}

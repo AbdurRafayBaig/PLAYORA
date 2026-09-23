@@ -3,7 +3,6 @@
 import { GitBranch } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { BracketView } from "@/components/tournament/BracketView"
-import { NotSignedIn } from "@/components/tournament/NoTournament"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
 
@@ -19,13 +18,9 @@ export function TeamBracketClient() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="p-4 sm:p-6 max-w-6xl mx-auto">
-        <NotSignedIn />
-      </div>
-    )
-  }
+  // TeamShell gates the whole portal, so `team` is present here. This
+  // guard only narrows the type.
+  if (!team) return null
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-6xl mx-auto">

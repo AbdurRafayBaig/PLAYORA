@@ -4,7 +4,6 @@ import { Users, KeyRound, Calendar, Eye } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Panel } from "@/components/ui/Panel"
 import { StatusBadge } from "@/components/cards/StatusBadge"
-import { NotSignedIn } from "@/components/tournament/NoTournament"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
 import { initials } from "@/lib/tournament/engine"
 import { formatDate } from "@/lib/utils"
@@ -21,13 +20,9 @@ export function TeamProfileClient() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-        <NotSignedIn />
-      </div>
-    )
-  }
+  // TeamShell gates the whole portal, so `team` is present here. This
+  // guard only narrows the type.
+  if (!team) return null
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-3xl mx-auto">

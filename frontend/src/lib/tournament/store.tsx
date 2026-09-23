@@ -44,6 +44,7 @@ const EMPTY: TournamentState = {
   matches: [],
   notices: [],
   signedInTeamId: null,
+  adminSignedIn: false,
 }
 
 let state: TournamentState = EMPTY
@@ -61,6 +62,7 @@ function load(): TournamentState {
       matches: parsed.matches ?? [],
       notices: parsed.notices ?? [],
       signedInTeamId: parsed.signedInTeamId ?? null,
+      adminSignedIn: parsed.adminSignedIn ?? false,
     }
   } catch {
     // Corrupt or blocked storage should not take the whole app down.
@@ -119,14 +121,16 @@ function notice(
     body,
     at: new Date().toISOString(),
     tone,
+    read: false,
   }
 }
 
 /* ── Actions ─────────────────────────────────────────────── */
 
 export function createTournament({ name, venue }: { name: string; venue: string }) {
-  commit(() => ({
+  commit((prev) => ({
     ...EMPTY,
+    adminSignedIn: prev.adminSignedIn,
     tournament: {
       name: name.trim() || "Ludo Championship",
       venue: venue.trim() || "Cafe",
@@ -140,7 +144,9 @@ export function createTournament({ name, venue }: { name: string; venue: string 
 }
 
 export function resetEverything() {
-  commit(() => EMPTY)
+  // Wiping the tournament should not also kick the organiser out of the
+  // console they are standing in.
+  commit((prev) => ({ ...EMPTY, adminSignedIn: prev.adminSignedIn }))
 }
 
 export function addTeam({ name, players }: { name: string; players: Player[] }): Team | null {
@@ -205,25 +211,55 @@ export function drawFirstRound() {
 }
 
 export function scheduleMatch(id: string, patch: { table?: string; startsAt?: string }) {
-  commit((prev) => ({
-    ...prev,
-    matches: prev.matches.map((m) => {
-      if (m.id !== id || m.status === "bye") return m
-      const next = { ...m, ...patch }
-      // A match counts as scheduled only once it has both a table and a
-      // kickoff; a half-filled row should not look ready to publish.
-      const ready = next.table !== "" && next.startsAt !== ""
-      return {
-        ...next,
-        status:
-          m.status === "live" || m.status === "completed"
-            ? m.status
-            : ready
-              ? "scheduled"
-              : "unscheduled",
-      }
-    }),
-  }))
+  commit((prev) => {
+    const match = prev.matches.find((m) => m.id === id)
+    if (!match || match.status === "bye") return prev
+
+    const next = { ...match, ...patch }
+    const ready = next.table !== "" && next.startsAt !== ""
+    const isPublished = Boolean(prev.tournament?.rounds[match.roundIndex]?.published)
+
+    // Once a round is published, teams have been told where and when to be.
+    // Emptying a field would leave them looking at a fixture with no table,
+    // so a published match can be changed but not un-set.
+    if (isPublished && !ready) return prev
+
+    const changed =
+      next.table !== match.table || next.startsAt !== match.startsAt
+    if (!changed) return prev
+
+    const notices: TeamNotice[] =
+      isPublished && match.status !== "completed"
+        ? [match.teamAId, match.teamBId]
+            .filter((t): t is string => Boolean(t))
+            .map((teamId) =>
+              notice(
+                teamId,
+                "Your fixture changed",
+                `Updated details: table ${next.table}. Check My Matches for the new kickoff time.`,
+                "warning",
+              ),
+            )
+        : []
+
+    return {
+      ...prev,
+      matches: prev.matches.map((m) =>
+        m.id !== id
+          ? m
+          : {
+              ...next,
+              status:
+                m.status === "live" || m.status === "completed"
+                  ? m.status
+                  : ready
+                    ? "scheduled"
+                    : "unscheduled",
+            },
+      ),
+      notices: [...notices, ...prev.notices],
+    }
+  })
 }
 
 export function publishRound(roundIndex: number) {
@@ -368,6 +404,29 @@ export function signOutTeam() {
   commit((prev) => ({ ...prev, signedInTeamId: null }))
 }
 
+export function signInAdmin() {
+  commit((prev) => ({ ...prev, adminSignedIn: true }))
+}
+
+export function signOutAdmin() {
+  commit((prev) => ({ ...prev, adminSignedIn: false }))
+}
+
+/** Called when a captain opens their notifications list. */
+export function markNoticesRead(teamId: string) {
+  commit((prev) => {
+    if (!prev.notices.some((n) => !n.read && (n.teamId === null || n.teamId === teamId))) {
+      return prev
+    }
+    return {
+      ...prev,
+      notices: prev.notices.map((n) =>
+        n.teamId === null || n.teamId === teamId ? { ...n, read: true } : n,
+      ),
+    }
+  })
+}
+
 /* ── Hooks ───────────────────────────────────────────────── */
 
 const ACTIONS = {
@@ -384,6 +443,9 @@ const ACTIONS = {
   advanceRound,
   signInTeam,
   signOutTeam,
+  signInAdmin,
+  signOutAdmin,
+  markNoticesRead,
 } as const
 
 /** True only after the client snapshot has replaced the server one. */

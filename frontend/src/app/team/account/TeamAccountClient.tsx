@@ -6,7 +6,6 @@ import { Settings, Palette, KeyRound, LogOut, LifeBuoy, ExternalLink, Eye } from
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Panel } from "@/components/ui/Panel"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
-import { NotSignedIn } from "@/components/tournament/NoTournament"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
 import { CONTACT } from "@/lib/constants"
 import { formatDate } from "@/lib/utils"
@@ -47,13 +46,9 @@ export function TeamAccountClient() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-        <NotSignedIn />
-      </div>
-    )
-  }
+  // TeamShell gates the whole portal, so `team` is present here. This
+  // guard only narrows the type.
+  if (!team) return null
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-3xl mx-auto">

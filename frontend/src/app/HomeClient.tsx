@@ -202,7 +202,8 @@ export function HomeClient() {
           ) : live.length > 0 ? (
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               {live.map((m) => (
-                <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)} />
+                <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue} />
               ))}
             </div>
           ) : (
@@ -256,7 +257,8 @@ export function HomeClient() {
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               {recent.map((m) => (
-                <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)} />
+                <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue} />
               ))}
             </div>
           </div>

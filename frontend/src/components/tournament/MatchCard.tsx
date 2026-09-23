@@ -82,12 +82,15 @@ export function MatchCard({
   match,
   teams,
   roundName,
+  venue,
   highlightTeamId,
   className,
 }: {
   match: Match
   teams: Team[]
   roundName: string
+  /** The tournament's venue. Every match is played at the same place. */
+  venue?: string
   /** Draws attention to the viewer's own team. */
   highlightTeamId?: string | null
   className?: string
@@ -110,6 +113,7 @@ export function MatchCard({
     `— ${match.status}`,
     match.winnerId ? `. ${name(match.winnerId)} advanced.` : "",
     match.table && match.table !== "—" ? ` Table ${match.table}.` : "",
+    venue ? ` At ${venue}.` : "",
     match.startsAt ? ` ${formatKickoff(match.startsAt)}.` : "",
   ]
     .filter(Boolean)
@@ -199,10 +203,12 @@ export function MatchCard({
               Table {match.table}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 min-w-0">
-            <MapPin className="w-3 h-3 shrink-0" />
-            <span className="truncate">Cafe</span>
-          </span>
+          {venue && (
+            <span className="inline-flex items-center gap-1 min-w-0">
+              <MapPin className="w-3 h-3 shrink-0" />
+              <span className="truncate">{venue}</span>
+            </span>
+          )}
           <span className="inline-flex items-center gap-1 sm:ml-auto">
             <Clock className="w-3 h-3 shrink-0" />
             {formatKickoff(match.startsAt)}

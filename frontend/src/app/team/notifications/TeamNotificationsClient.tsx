@@ -1,9 +1,9 @@
 "use client"
 
+import { useEffect } from "react"
 import { Bell, BellOff, Info, CircleCheck, TriangleAlert } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { EmptyState } from "@/components/ui/EmptyState"
-import { NotSignedIn } from "@/components/tournament/NoTournament"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
 import { cn, pluralise } from "@/lib/utils"
 import { formatKickoff } from "@/lib/tournament/engine"
@@ -15,8 +15,16 @@ const toneMeta = {
 } as const
 
 export function TeamNotificationsClient() {
-  const { ready, notices } = useTournament()
+  const { ready, notices, markNoticesRead } = useTournament()
   const team = useSignedInTeam()
+
+  /* Opening this page is what "reading" means. Writing to the store from an
+     effect is the legitimate use of one — syncing an external system with
+     what React just rendered — rather than a cascading setState. */
+  const teamId = team?.id
+  useEffect(() => {
+    if (teamId) markNoticesRead(teamId)
+  }, [teamId, markNoticesRead])
 
   if (!ready) {
     return (
@@ -26,13 +34,9 @@ export function TeamNotificationsClient() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-        <NotSignedIn />
-      </div>
-    )
-  }
+  // TeamShell gates the whole portal, so `team` is present here. This
+  // guard only narrows the type.
+  if (!team) return null
 
   // Broadcast notices (teamId null) plus anything addressed to this team.
   const mine = notices.filter((n) => n.teamId === null || n.teamId === team.id)
@@ -62,7 +66,10 @@ export function TeamNotificationsClient() {
             const meta = toneMeta[n.tone]
             const Icon = meta.icon
             return (
-              <li key={n.id} className={cn("card-base p-4 flex gap-3 border-l-4", meta.edge)}>
+              <li
+                key={n.id}
+                className={cn("card-base p-4 flex gap-3 border-l-4", meta.edge)}
+              >
                 <span
                   aria-hidden="true"
                   className={cn(

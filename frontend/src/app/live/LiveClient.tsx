@@ -59,7 +59,8 @@ export function LiveClient() {
           </p>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {live.map((m) => (
-              <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)} />
+              <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue} />
             ))}
           </div>
         </>
@@ -88,7 +89,8 @@ export function LiveClient() {
           </h2>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
             {next.map((m) => (
-              <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)} />
+              <MatchCard key={m.id} match={m} teams={teams} roundName={roundName(m.roundIndex)}
+                    venue={tournament?.venue} />
             ))}
           </div>
         </section>

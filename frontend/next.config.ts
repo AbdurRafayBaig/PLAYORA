@@ -33,6 +33,28 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }]
   },
+
+  /**
+   * The points table became a knockout bracket, so these paths no longer
+   * exist. They were live long enough to be linked and bookmarked, and a
+   * 404 is a worse answer than the page that replaced them.
+   */
+  async redirects() {
+    return [
+      { source: "/standings", destination: "/bracket", permanent: true },
+      { source: "/team/standing", destination: "/team/bracket", permanent: true },
+      { source: "/team/results", destination: "/team/matches", permanent: true },
+      { source: "/admin/standings", destination: "/admin/bracket", permanent: true },
+      { source: "/admin/tournaments", destination: "/admin", permanent: true },
+      { source: "/admin/players", destination: "/admin/teams", permanent: true },
+      { source: "/admin/venues", destination: "/admin/settings", permanent: true },
+      { source: "/admin/disputes", destination: "/admin", permanent: true },
+      { source: "/admin/announcements", destination: "/admin", permanent: true },
+      { source: "/admin/reports", destination: "/admin/bracket", permanent: true },
+      { source: "/admin/users", destination: "/admin/teams", permanent: true },
+      { source: "/admin/audit", destination: "/admin", permanent: true },
+    ]
+  },
 }
 
 export default nextConfig

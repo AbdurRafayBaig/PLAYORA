@@ -21,6 +21,7 @@ function toLocalInput(iso: string): string {
 }
 
 function MatchAssignRow({ match, round }: { match: Match; round: Round }) {
+  const published = round.published
   const { teams, scheduleMatch } = useTournament()
   const nameOf = (id: string | null) =>
     id ? (teams.find((t) => t.id === id)?.name ?? "Unknown") : "Bye"
@@ -106,6 +107,14 @@ function MatchAssignRow({ match, round }: { match: Match; round: Round }) {
         <p className="text-[11px] text-ludo-flame-ink flex items-center gap-1.5">
           <CircleAlert aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
           Needs both a table and a kickoff time before the round can be published.
+        </p>
+      )}
+
+      {published && editable && (
+        <p className="text-[11px] text-ink-muted flex items-start gap-1.5">
+          <CircleAlert aria-hidden="true" className="w-3.5 h-3.5 shrink-0 mt-px" />
+          Teams have been told where and when to be. You can change these, and
+          both teams are notified — but they cannot be left empty.
         </p>
       )}
       <span className="sr-only">{round.name}</span>

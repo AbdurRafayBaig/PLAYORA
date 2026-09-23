@@ -5,7 +5,6 @@ import {
   Trophy, Swords, Calendar, GitBranch, ChevronRight, Users, Bell, Crown, Eye,
 } from "lucide-react"
 import { MatchCard } from "@/components/tournament/MatchCard"
-import { NotSignedIn } from "@/components/tournament/NoTournament"
 import { StatusBadge } from "@/components/cards/StatusBadge"
 import { Panel } from "@/components/ui/Panel"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -25,13 +24,9 @@ export function TeamHomeClient() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="p-4 sm:p-6 max-w-4xl mx-auto">
-        <NotSignedIn />
-      </div>
-    )
-  }
+  // TeamShell gates the whole portal, so `team` is present here. This
+  // guard only narrows the type.
+  if (!team) return null
 
   const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
   const published = new Set(
@@ -135,6 +130,7 @@ export function TeamHomeClient() {
             match={live}
             teams={teams}
             roundName={roundName(live.roundIndex)}
+            venue={tournament?.venue}
             highlightTeamId={team.id}
           />
         </section>
@@ -158,6 +154,7 @@ export function TeamHomeClient() {
             match={next}
             teams={teams}
             roundName={roundName(next.roundIndex)}
+            venue={tournament?.venue}
             highlightTeamId={team.id}
           />
         </section>
@@ -182,6 +179,7 @@ export function TeamHomeClient() {
             match={last}
             teams={teams}
             roundName={roundName(last.roundIndex)}
+            venue={tournament?.venue}
             highlightTeamId={team.id}
           />
         </section>
