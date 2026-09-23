@@ -1,147 +1,191 @@
-"use client"
-
+import type { Metadata } from "next"
 import Link from "next/link"
 import {
-  Trophy, Swords, Calendar, BarChart3, ChevronRight,
-  Clock, MapPin, Users, Radio,
+  Trophy, Swords, Calendar, BarChart3, ChevronRight, Users, Bell,
 } from "lucide-react"
 import { MatchCard } from "@/components/cards/MatchCard"
 import { StatusBadge } from "@/components/cards/StatusBadge"
+import { Panel } from "@/components/ui/Panel"
+import {
+  getSignedInTeam,
+  getPlayersForTeam,
+  getMatchesForTeam,
+  getStandings,
+  NOTIFICATIONS,
+} from "@/lib/data"
+import { getInitials } from "@/lib/utils"
+
+export const metadata: Metadata = { title: "Home" }
 
 export default function TeamHomePage() {
+  const team = getSignedInTeam()
+  const players = getPlayersForTeam(team.id)
+  const matches = getMatchesForTeam(team.name)
+  const rank = getStandings().findIndex((t) => t.id === team.id) + 1
+
+  const nextMatch = matches.find((m) =>
+    ["scheduled", "checkin", "ready"].includes(m.status),
+  )
+  const liveMatch = matches.find((m) => m.status === "live")
+  const lastResult = matches.find((m) => m.status === "completed")
+  const latest = NOTIFICATIONS[0]
+
+  const stats = [
+    { label: "Matches Played", value: team.played, icon: Swords, color: "text-ludo-red-ink", border: "border-t-ludo-red" },
+    { label: "Wins", value: team.wins, icon: Trophy, color: "text-ludo-green-ink", border: "border-t-ludo-green" },
+    { label: "Points", value: team.points, icon: BarChart3, color: "text-ludo-blue-ink", border: "border-t-ludo-blue" },
+    { label: "Current Rank", value: `#${rank}`, icon: Trophy, color: "text-ludo-yellow-ink", border: "border-t-ludo-yellow" },
+  ]
+
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-4xl mx-auto">
-      {/* ── Welcome Banner ── */}
+      {/* Welcome */}
       <div className="card-base overflow-hidden">
         <div className="relative p-6 sm:p-8">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-ludo-red/5 rounded-full blur-3xl pointer-events-none" />
+          <div
+            aria-hidden="true"
+            className="absolute top-0 right-0 w-48 h-48 bg-ludo-red/5 rounded-full blur-3xl pointer-events-none"
+          />
           <div className="relative">
-            <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">Welcome Back</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">
+              Welcome back
+            </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight mt-1">
-              Thunder Hawks 🦅
+              {team.name}
             </h1>
-            <div className="flex items-center gap-3 mt-2">
-              <StatusBadge status="qualified" size="md" />
-              <span className="text-xs text-ink-muted">Team Code: T001</span>
+            <div className="flex flex-wrap items-center gap-3 mt-2">
+              <StatusBadge status={team.status} size="md" />
+              <span className="text-xs text-ink-muted">Team Code: {team.code}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Quick Stats ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Matches Played", value: "4", icon: Swords, color: "text-ludo-red", border: "border-t-ludo-red" },
-          { label: "Wins", value: "3", icon: Trophy, color: "text-ludo-green", border: "border-t-ludo-green" },
-          { label: "Points", value: "9", icon: BarChart3, color: "text-ludo-blue", border: "border-t-ludo-blue" },
-          { label: "Current Rank", value: "#2", icon: Trophy, color: "text-ludo-yellow", border: "border-t-ludo-yellow" },
-        ].map((stat) => {
+      {/* Stats */}
+      <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {stats.map((stat) => {
           const Icon = stat.icon
           return (
             <div key={stat.label} className={`card-base border-t-4 ${stat.border} p-4 text-center`}>
-              <Icon className={`w-5 h-5 mx-auto mb-1.5 ${stat.color}`} />
-              <p className="text-xl font-extrabold text-ink">{stat.value}</p>
-              <p className="text-[10px] font-medium text-ink-muted">{stat.label}</p>
+              <Icon aria-hidden="true" className={`w-5 h-5 mx-auto mb-1.5 ${stat.color}`} />
+              <dd className="text-xl font-extrabold text-ink tabular-nums">{stat.value}</dd>
+              <dt className="text-[10px] font-medium text-ink-muted">{stat.label}</dt>
             </div>
           )
         })}
-      </div>
+      </dl>
 
-      {/* ── Upcoming Match ── */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-ludo-blue" />
-            <h2 className="text-sm font-bold text-ink">Next Match</h2>
-          </div>
-          <Link href="/team/matches" className="text-[11px] font-semibold text-ludo-blue hover:underline inline-flex items-center gap-0.5">
-            All Matches <ChevronRight className="w-3 h-3" />
-          </Link>
-        </div>
-        <MatchCard
-          id="M005"
-          teamA="Thunder Hawks"
-          teamB="Silver Wolves"
-          status="scheduled"
-          venue="Main Hall"
-          table="T1"
-          time="Tomorrow, 3:00 PM"
-          round="Semi Final"
-        />
-      </div>
+      {/* Live now */}
+      {liveMatch && (
+        <section aria-labelledby="team-live">
+          <h2 id="team-live" className="flex items-center gap-2 text-sm font-bold text-ink mb-3">
+            <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ludo-red opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-ludo-red" />
+            </span>
+            Your match is live
+          </h2>
+          <MatchCard {...liveMatch} />
+        </section>
+      )}
 
-      {/* ── Recent Results ── */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-ludo-green" />
-            <h2 className="text-sm font-bold text-ink">Recent Results</h2>
+      {/* Next match */}
+      {nextMatch && (
+        <section aria-labelledby="team-next">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h2 id="team-next" className="flex items-center gap-2 text-sm font-bold text-ink">
+              <Calendar aria-hidden="true" className="w-4 h-4 text-ludo-blue-ink" />
+              Next Match
+            </h2>
+            <Link
+              href="/team/matches"
+              className="text-[11px] font-semibold text-ludo-blue-ink hover:underline inline-flex items-center gap-0.5"
+            >
+              All matches <ChevronRight aria-hidden="true" className="w-3 h-3" />
+            </Link>
           </div>
-          <Link href="/team/results" className="text-[11px] font-semibold text-ludo-green hover:underline inline-flex items-center gap-0.5">
-            All Results <ChevronRight className="w-3 h-3" />
-          </Link>
-        </div>
-        <div className="space-y-3">
-          <MatchCard
-            id="M006"
-            teamA="Thunder Hawks"
-            teamB="Iron Titans"
-            status="completed"
-            winner="A"
-            venue="Room 201"
-            table="T3"
-            time="Today, 1:00 PM"
-            round="Quarter Final"
-          />
-        </div>
-      </div>
+          <MatchCard {...nextMatch} />
+        </section>
+      )}
 
-      {/* ── Team Members ── */}
-      <div className="card-base overflow-hidden">
-        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-ink-muted" />
-            <h3 className="text-sm font-bold text-ink">Team Members</h3>
+      {/* Last result */}
+      {lastResult && (
+        <section aria-labelledby="team-recent">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h2 id="team-recent" className="flex items-center gap-2 text-sm font-bold text-ink">
+              <Trophy aria-hidden="true" className="w-4 h-4 text-ludo-green-ink" />
+              Latest Result
+            </h2>
+            <Link
+              href="/team/results"
+              className="text-[11px] font-semibold text-ludo-green-ink hover:underline inline-flex items-center gap-0.5"
+            >
+              All results <ChevronRight aria-hidden="true" className="w-3 h-3" />
+            </Link>
           </div>
-          <Link href="/team/profile" className="text-[11px] font-semibold text-ludo-red hover:underline cursor-pointer">
-            Edit
+          <MatchCard {...lastResult} />
+        </section>
+      )}
+
+      {/* Roster */}
+      <Panel
+        title="Team Members"
+        icon={<Users aria-hidden="true" className="w-4 h-4 text-ink-muted" />}
+        flush
+        action={
+          <Link
+            href="/team/profile"
+            className="text-[11px] font-semibold text-ludo-red-ink hover:underline"
+          >
+            View profile
           </Link>
-        </div>
-        <div className="divide-y divide-border">
-          {[
-            { name: "Ali Khan", role: "Captain", email: "ali@example.com", phone: "0300-0000000" },
-            { name: "Usman Ahmed", role: "Member", email: "usman@example.com", phone: "0311-1111111" },
-          ].map((member) => (
-            <div key={member.name} className="px-4 py-3 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-ludo-red/10 flex items-center justify-center text-xs font-bold text-ludo-red">
-                {member.name.split(" ").map(w => w[0]).join("")}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-ink">{member.name}</p>
-                  {member.role === "Captain" && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-ludo-yellow/15 text-ludo-yellow-dark border border-ludo-yellow/20">
+        }
+      >
+        <ul className="divide-y divide-border list-none">
+          {players.map((player) => (
+            <li key={player.id} className="px-4 py-3 flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="w-9 h-9 shrink-0 rounded-full bg-ludo-red/10 flex items-center justify-center text-xs font-bold text-ludo-red-ink"
+              >
+                {getInitials(player.name)}
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-ink truncate">
+                    {player.name}
+                  </span>
+                  {player.role === "Captain" && (
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-ludo-yellow/15 text-ludo-yellow-ink border border-ludo-yellow/30 shrink-0">
                       Captain
                     </span>
                   )}
-                </div>
-                <p className="text-[10px] text-ink-muted">{member.email} • {member.phone}</p>
-              </div>
-            </div>
+                </span>
+                <span className="block text-[10px] text-ink-muted truncate">
+                  {player.email}
+                </span>
+              </span>
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </Panel>
 
-      {/* ── Notifications ── */}
-      <div className="card-base p-4 space-y-2 border-l-4 border-l-ludo-blue">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-ludo-blue" />
-          <h3 className="text-xs font-bold text-ink">Latest Update</h3>
+      {/* Latest update */}
+      {latest && (
+        <div className="card-base p-4 space-y-2 border-l-4 border-l-ludo-blue">
+          <h2 className="flex items-center gap-2 text-xs font-bold text-ink">
+            <Bell aria-hidden="true" className="w-4 h-4 text-ludo-blue-ink" />
+            {latest.title}
+          </h2>
+          <p className="text-[11px] text-ink-muted leading-relaxed">{latest.body}</p>
+          <Link
+            href="/team/notifications"
+            className="text-[11px] font-semibold text-ludo-blue-ink hover:underline inline-flex items-center gap-0.5"
+          >
+            All notifications <ChevronRight aria-hidden="true" className="w-3 h-3" />
+          </Link>
         </div>
-        <p className="text-[11px] text-ink-muted leading-relaxed">
-          Semi-Final fixtures have been published. Your match against Silver Wolves is scheduled for tomorrow at 3:00 PM in Main Hall, Table T1.
-        </p>
-      </div>
+      )}
     </div>
   )
 }

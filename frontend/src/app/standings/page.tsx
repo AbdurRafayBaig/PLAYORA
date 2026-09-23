@@ -74,9 +74,10 @@ export default function StandingsPage() {
     {
       key: "rank",
       header: "#",
-      width: "3.5rem",
+      width: "3rem",
       align: "center",
       numeric: true,
+      sticky: "0",
       render: (team) => (
         <span
           className={cn(
@@ -91,29 +92,26 @@ export default function StandingsPage() {
     {
       key: "team",
       header: "Team",
+      width: "9rem",
+      sticky: "3rem",
       render: (team) => (
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
           <span
             aria-hidden="true"
-            className="w-8 h-8 shrink-0 rounded-lg bg-ludo-blue/10 flex items-center justify-center text-[10px] font-bold text-ludo-blue-ink"
+            className="w-7 h-7 shrink-0 rounded-lg bg-ludo-blue/10 hidden sm:flex items-center justify-center text-[10px] font-bold text-ludo-blue-ink"
           >
             {team.initials}
           </span>
-          <span className="min-w-0">
-            <span className="block text-sm font-bold text-ink truncate">{team.name}</span>
-            <span className="block text-[10px] text-ink-muted truncate">
-              {team.captain}
-            </span>
-          </span>
+          <span className="text-sm font-bold text-ink truncate">{team.name}</span>
         </div>
       ),
     },
+    { key: "points", header: "Pts", align: "center", numeric: true, width: "3.5rem", render: (t) => <span className="text-lg font-extrabold text-ink">{t.points}</span> },
     { key: "played", header: "P", align: "center", numeric: true, width: "3rem", render: (t) => <span className="text-ink-muted font-semibold">{t.played}</span> },
     { key: "wins", header: "W", align: "center", numeric: true, width: "3rem", render: (t) => <span className="text-ludo-green-ink font-semibold">{t.wins}</span> },
-    { key: "losses", header: "L", align: "center", numeric: true, width: "3rem", hideOnMobile: true, render: (t) => <span className="text-ludo-red-ink font-semibold">{t.losses}</span> },
-    { key: "points", header: "Pts", align: "center", numeric: true, width: "3.5rem", render: (t) => <span className="text-lg font-extrabold text-ink">{t.points}</span> },
-    { key: "form", header: "Form", align: "center", hideOnMobile: true, width: "7rem", render: (t) => <FormGuide form={t.form} /> },
-    { key: "status", header: "Status", align: "center", hideOnMobile: true, width: "7rem", render: (t) => <StatusBadge status={t.status} /> },
+    { key: "losses", header: "L", align: "center", numeric: true, width: "3rem", render: (t) => <span className="text-ludo-red-ink font-semibold">{t.losses}</span> },
+    { key: "form", header: "Form", align: "center", width: "7rem", render: (t) => <FormGuide form={t.form} /> },
+    { key: "status", header: "Status", align: "center", width: "7rem", render: (t) => <StatusBadge status={t.status} /> },
     { key: "trend", header: "Trend", align: "center", width: "3.5rem", render: (t) => <TrendCell trend={t.trend} /> },
   ]
 
@@ -145,8 +143,9 @@ export default function StandingsPage() {
           rowClassName={(team) => (team.rank <= 3 ? "bg-ludo-green/[0.04]" : undefined)}
         />
 
-        <p className="mt-2 text-[11px] text-ink-faint sm:hidden">
-          Swipe the table sideways to see losses, form and status.
+        <p className="mt-2 text-[11px] text-ink-faint lg:hidden">
+          Swipe the table sideways for losses, form and status — the rank and
+          team stay pinned.
         </p>
 
         {/* Legend — abbreviations are not self-explanatory to a first-time

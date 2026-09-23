@@ -101,7 +101,7 @@ export default function AboutPage() {
           )}
 
           {secondaryMembers.length > 0 && (
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in-up delay-200 list-none">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in-up anim-delay-200 list-none">
               {secondaryMembers.map((member) => (
                 <li key={member.name}>
                   <PersonCard {...member} />
@@ -112,7 +112,7 @@ export default function AboutPage() {
         </section>
 
         {/* About the platform */}
-        <section className="space-y-6 animate-fade-in-up delay-300" aria-labelledby="platform-heading">
+        <section className="space-y-6 animate-fade-in-up anim-delay-300" aria-labelledby="platform-heading">
           <div className="text-center">
             <h2
               id="platform-heading"
@@ -146,7 +146,7 @@ export default function AboutPage() {
         </section>
 
         {/* Tech stack */}
-        <section className="space-y-4 animate-fade-in-up delay-400" aria-labelledby="stack-heading">
+        <section className="space-y-4 animate-fade-in-up anim-delay-400" aria-labelledby="stack-heading">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">
               Technology Stack
@@ -169,7 +169,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="p-6 rounded-2xl border border-ludo-red/20 bg-ludo-red/5 text-center space-y-4 animate-fade-in-up delay-500">
+        <section className="p-6 rounded-2xl border border-ludo-red/20 bg-ludo-red/5 text-center space-y-4 animate-fade-in-up anim-delay-500">
           <h2 className="text-sm font-bold text-ink">
             Ready to Explore the Tournament?
           </h2>

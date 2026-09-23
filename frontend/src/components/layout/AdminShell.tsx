@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   LayoutDashboard, Trophy, Users, UserCircle, Calendar,
   Radio, BarChart3, MapPin, AlertTriangle, Megaphone,
@@ -13,6 +13,7 @@ import { ADMIN_NAV_GROUPS, BRAND } from "@/lib/constants"
 import { LudoMark } from "@/components/layout/LudoMark"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import { cn } from "@/lib/utils"
+import { useStoredFlag } from "@/lib/useStoredFlag"
 
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard, Trophy, Users, UserCircle, Calendar,
@@ -31,36 +32,19 @@ const COLLAPSE_KEY = "playora:admin-sidebar-collapsed"
  */
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useStoredFlag(COLLAPSE_KEY)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [lastPath, setLastPath] = useState(pathname)
   const drawerRef = useRef<HTMLDivElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
 
-  /* Restore the collapsed preference after mount. Reading localStorage during
-     render would desync the server and client markup. */
-  useEffect(() => {
-    try {
-      setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "true")
-    } catch {
-      /* Private mode or blocked storage — the default is fine. */
-    }
-  }, [])
-
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed((prev) => {
-      const next = !prev
-      try {
-        window.localStorage.setItem(COLLAPSE_KEY, String(next))
-      } catch {
-        /* Non-fatal. */
-      }
-      return next
-    })
-  }, [])
-
-  useEffect(() => {
-    setDrawerOpen(false)
-  }, [pathname])
+  /* Close the drawer on navigation. Adjusting state during render is React's
+     documented pattern for "reset when a value changes" — an effect here
+     would paint the stale open drawer over the new page first. */
+  if (pathname !== lastPath) {
+    setLastPath(pathname)
+    if (drawerOpen) setDrawerOpen(false)
+  }
 
   useEffect(() => {
     if (!drawerOpen) return
@@ -185,7 +169,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           )}
           <button
             type="button"
-            onClick={toggleCollapsed}
+            onClick={() => setCollapsed(!collapsed)}
             className="w-8 h-8 shrink-0 mx-auto flex items-center justify-center rounded-lg hover:bg-ink-faint/10 text-ink-muted transition-colors cursor-pointer"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-pressed={collapsed}

@@ -1,42 +1,31 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
 import { Sun, Moon } from "lucide-react"
 
 /**
  * Light/dark switch.
  *
- * Reads `resolvedTheme`, not `theme` — with `defaultTheme="system"` the
- * latter is the literal string "system", so comparing it to "dark" would
- * make the first click a no-op for anyone on a dark device.
+ * Two deliberate choices here:
+ *
+ * 1. `resolvedTheme`, not `theme`. With `defaultTheme="system"` the latter is
+ *    the literal string "system", so comparing it to "dark" made the first
+ *    click a no-op for anyone on a dark device.
+ *
+ * 2. Nothing in the render depends on the theme, so there is no `mounted`
+ *    state and no hydration gap. The icon swap is pure CSS via the `.dark`
+ *    class that next-themes sets in a blocking script before first paint,
+ *    and the theme is only read inside the click handler.
  */
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
-
-  const isDark = resolvedTheme === "dark"
-
-  // The server cannot know the device theme, so render a same-sized
-  // placeholder until mount to keep the header from shifting.
-  if (!mounted) {
-    return (
-      <div
-        className={`w-9 h-9 rounded-xl border border-border ${className}`}
-        aria-hidden="true"
-      />
-    )
-  }
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      className={`relative w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-surface-raised text-ink hover:bg-ink-faint/10 transition-colors duration-200 cursor-pointer ${className}`}
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      className={`relative w-11 h-11 flex items-center justify-center rounded-xl border border-border bg-surface-raised text-ink hover:bg-ink-faint/10 transition-colors duration-200 cursor-pointer ${className}`}
+      title="Switch between light and dark theme"
     >
       <Sun
         aria-hidden="true"
@@ -44,8 +33,16 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       />
       <Moon
         aria-hidden="true"
-        className="absolute w-4 h-4 text-ludo-blue rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
+        className="absolute w-4 h-4 text-ludo-blue-ink rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
       />
+      {/* The accessible name tracks the current theme, swapped by the same
+          CSS rather than by React state. */}
+      <span className="dark:hidden">
+        <span className="sr-only">Switch to dark theme</span>
+      </span>
+      <span className="hidden dark:block">
+        <span className="sr-only">Switch to light theme</span>
+      </span>
     </button>
   )
 }

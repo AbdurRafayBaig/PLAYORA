@@ -75,9 +75,9 @@ export default function HomePage() {
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <div className="absolute top-20 left-10 w-72 h-72 bg-ludo-red/5 rounded-full blur-3xl animate-float" />
-            <div className="absolute top-40 right-20 w-96 h-96 bg-ludo-blue/5 rounded-full blur-3xl animate-float delay-200" />
-            <div className="absolute bottom-10 left-1/3 w-64 h-64 bg-ludo-green/5 rounded-full blur-3xl animate-float delay-400" />
-            <div className="absolute bottom-40 right-10 w-48 h-48 bg-ludo-yellow/5 rounded-full blur-3xl animate-float delay-300" />
+            <div className="absolute top-40 right-20 w-96 h-96 bg-ludo-blue/5 rounded-full blur-3xl animate-float anim-delay-200" />
+            <div className="absolute bottom-10 left-1/3 w-64 h-64 bg-ludo-green/5 rounded-full blur-3xl animate-float anim-delay-400" />
+            <div className="absolute bottom-40 right-10 w-48 h-48 bg-ludo-yellow/5 rounded-full blur-3xl animate-float anim-delay-300" />
           </div>
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
@@ -123,7 +123,7 @@ export default function HomePage() {
             </div>
 
             {/* Quick stats */}
-            <dl className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto animate-fade-in-up delay-200">
+            <dl className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto animate-fade-in-up anim-delay-200">
               {quickStats.map((stat) => {
                 const Icon = stat.icon
                 return (
@@ -307,11 +307,21 @@ export default function HomePage() {
         {/* ═══════════ CTA ═══════════ */}
         <section className="pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="relative overflow-hidden rounded-3xl p-8 sm:p-12 text-center">
-              <div className="absolute inset-0 ludo-gradient opacity-90" aria-hidden="true" />
-              {/* Darkens the animated gradient so white text keeps its
-                  contrast at every point of the loop. */}
-              <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
+            {/* The gradient used to run behind the text under a 45% black
+                wash — the only way white stayed legible over the yellow
+                stop, and it turned the whole panel muddy brown. Now the
+                gradient is a crisp accent bar and the text sits on solid
+                ink, which reads better and clears AA comfortably. */}
+            <div className="relative overflow-hidden rounded-3xl bg-[#121722] p-8 sm:p-12 text-center">
+              <div className="absolute inset-x-0 top-0 h-1.5 ludo-gradient" aria-hidden="true" />
+              <div
+                aria-hidden="true"
+                className="absolute -top-24 -right-16 w-72 h-72 rounded-full bg-ludo-blue/20 blur-3xl"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-ludo-red/20 blur-3xl"
+              />
 
               <div className="relative z-10 space-y-4">
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">

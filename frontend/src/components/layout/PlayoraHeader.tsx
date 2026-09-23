@@ -19,15 +19,18 @@ const iconMap: Record<string, React.ElementType> = {
 export function PlayoraHeader() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [lastPath, setLastPath] = useState(pathname)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
   /* Close on navigation. Clicking a link already closes the menu, but a
      browser back/forward or a programmatic push would otherwise leave it
-     hanging open over the new page. */
-  useEffect(() => {
-    setMobileOpen(false)
-  }, [pathname])
+     hanging open over the new page. Adjusting state during render rather
+     than in an effect avoids painting the stale menu over the new page. */
+  if (pathname !== lastPath) {
+    setLastPath(pathname)
+    if (mobileOpen) setMobileOpen(false)
+  }
 
   /* Escape closes, and focus goes back to the button that opened it —
      otherwise a keyboard user is dropped at the top of the document. */

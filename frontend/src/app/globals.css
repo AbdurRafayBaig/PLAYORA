@@ -3,6 +3,21 @@
 /* ═══════════════════════════════════════════════════════════
    PLAYORA — Design System
    Ludo-inspired palette: Red / Yellow / Green / Blue
+
+   ── A note on cascade layers ──
+   Tailwind v4 emits `@layer theme, base, components, utilities`. Unlayered
+   author CSS beats *every* layer regardless of specificity, so anything
+   written outside a layer here silently overrides utility classes.
+
+   That is not theoretical: an unlayered `* { margin: 0; padding: 0 }` reset
+   used to sit at the top of this file, which meant every `p-4`, `px-6`,
+   `mt-*` and `space-y-*` in the entire app computed to 0. Cards rendered
+   edge to edge and `border-t-4` accent stripes never appeared, because an
+   unlayered `.card-base { border: 1px solid }` outranked them too.
+
+   So: resets go in `base`, reusable blocks in `components`, class-level
+   helpers in `utilities`, and only custom-property definitions stay
+   unlayered.
    ═══════════════════════════════════════════════════════════ */
 
 /* Tailwind v4 defaults `dark:` to prefers-color-scheme. We drive the theme
@@ -80,7 +95,10 @@
 
 /* ═══════════════════════════════════
    Dark Mode Overrides
-   Unlayered, so these always beat the `@layer theme` defaults.
+
+   Unlayered on purpose: this block only redefines custom properties, which
+   utilities read rather than compete with, and it has to outrank the
+   `@layer theme` defaults that `@theme` emits onto `:root`.
    ═══════════════════════════════════ */
 .dark {
   --color-primary: #FF6F60;
@@ -128,185 +146,249 @@
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
   --shadow-elevated: 0 10px 25px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
-}
 
-/* ═══════════════════════════════════
-   Base Styles
-   ═══════════════════════════════════ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* Stops iOS Safari from inflating text in landscape. */
-  -webkit-text-size-adjust: 100%;
-  color-scheme: light;
-}
-
-.dark {
   color-scheme: dark;
 }
 
-body {
-  font-family: var(--font-sans);
-  color: var(--color-ink);
-  background-color: var(--color-surface);
-  line-height: 1.6;
-  /* Guards against a single long word (team names, emails) forcing the
-     whole page to scroll sideways on a narrow phone. */
-  overflow-wrap: break-word;
-  transition: background-color 0.3s var(--ease-smooth), color 0.2s var(--ease-smooth);
-}
+/* ═══════════════════════════════════
+   Base
+   Tailwind's preflight already applies the margin / padding / box-sizing
+   reset, so this layer only adds what preflight does not.
+   ═══════════════════════════════════ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Stops iOS Safari from inflating text in landscape. */
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
 
-/* Locked while a mobile drawer is open. */
-body[data-scroll-locked="true"] {
-  overflow: hidden;
-}
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    line-height: 1.6;
+    /* Guards against a single long word (team names, emails) forcing the
+       whole page to scroll sideways on a narrow phone. */
+    overflow-wrap: break-word;
+    transition: background-color 0.3s var(--ease-smooth), color 0.2s var(--ease-smooth);
+  }
 
-::selection {
-  background-color: var(--color-ludo-red);
-  color: #fff;
+  /* Set while a mobile drawer is open. */
+  body[data-scroll-locked="true"] {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background-color: var(--color-ludo-red);
+    color: #fff;
+  }
+
+  /* Visible for keyboards, quiet for mice. */
+  :focus-visible {
+    outline: 2px solid var(--color-ludo-blue);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Inputs draw their own ring. */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 100px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-faint);
+  }
 }
 
 /* ═══════════════════════════════════
-   Focus — visible for keyboards, quiet for mice
+   Components
+   In the `components` layer so utilities written alongside them win —
+   `card-base border-t-4` has to produce a 4px top border.
    ═══════════════════════════════════ */
-:focus-visible {
-  outline: 2px solid var(--color-ludo-blue);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
+@layer components {
+  .card-base {
+    background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.25s var(--ease-smooth), transform 0.25s var(--ease-spring);
+  }
 
-/* Inputs draw their own ring. */
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: none;
-}
+  /* Lift only where a pointer can actually hover — on touch this fires on
+     tap and leaves the card stuck in its hover state. */
+  @media (hover: hover) and (pointer: fine) {
+    .card-base:hover {
+      box-shadow: var(--shadow-card-hover);
+      transform: translateY(-2px);
+    }
+  }
 
-.skip-link {
-  position: absolute;
-  left: 50%;
-  top: 0.5rem;
-  transform: translate(-50%, -250%);
-  z-index: 100;
-  padding: 0.625rem 1.25rem;
-  border-radius: var(--radius-xl);
-  background-color: var(--color-ludo-red);
-  color: #fff;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  box-shadow: var(--shadow-elevated);
-  transition: transform 0.2s var(--ease-smooth);
-}
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+  }
 
-.skip-link:focus {
-  transform: translate(-50%, 0);
+  .dark .glass-card {
+    background: rgba(21, 25, 33, 0.7);
+  }
+
+  .ludo-border {
+    position: relative;
+  }
+
+  .ludo-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background-image: linear-gradient(135deg, #E53935, #FBC02D, #43A047, #1E88E5);
+    z-index: -1;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+
+  .ludo-border:hover::before {
+    opacity: 1;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 50%;
+    top: 0.5rem;
+    transform: translate(-50%, -250%);
+    z-index: 100;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-xl);
+    background-color: var(--color-ludo-red);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-elevated);
+    transition: transform 0.2s var(--ease-smooth);
+  }
+
+  .skip-link:focus {
+    transform: translate(-50%, 0);
+  }
+
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--color-ink-faint) 14%, transparent);
+    border-radius: var(--radius-md);
+  }
+
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-ink-faint) 12%, transparent),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
 }
 
 /* ═══════════════════════════════════
-   Utility Classes
+   Utilities
+   Same layer as Tailwind's own, so these compose and override predictably.
    ═══════════════════════════════════ */
-.glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--color-border);
-}
-
-.dark .glass-card {
-  background: rgba(21, 25, 33, 0.7);
-}
-
-.card-base {
-  background-color: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.25s var(--ease-smooth), transform 0.25s var(--ease-spring);
-}
-
-/* Lift only where a pointer can actually hover — on touch this fires on tap
-   and leaves the card stuck in its hover state. */
-@media (hover: hover) and (pointer: fine) {
-  .card-base:hover {
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-2px);
+@layer utilities {
+  .ludo-gradient {
+    background-image: linear-gradient(
+      135deg,
+      #E53935 0%, #FBC02D 25%, #43A047 50%, #1E88E5 75%, #E53935 100%
+    );
+    background-size: 300% 300%;
+    animation: ludo-shift 6s ease infinite;
   }
-}
 
-.ludo-gradient {
-  background: linear-gradient(135deg, #E53935 0%, #FBC02D 25%, #43A047 50%, #1E88E5 75%, #E53935 100%);
-  background-size: 300% 300%;
-  animation: ludo-shift 6s ease infinite;
-}
-
-.ludo-border {
-  position: relative;
-}
-
-.ludo-border::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, #E53935, #FBC02D, #43A047, #1E88E5);
-  z-index: -1;
-  opacity: 0.6;
-  transition: opacity 0.3s;
-}
-
-.ludo-border:hover::before {
-  opacity: 1;
-}
-
-.text-gradient-ludo {
-  /* Painted first, so the text stays readable if background-clip is
-     unsupported or forced-colors strips the gradient. */
-  color: var(--color-ludo-red);
-  background-image: linear-gradient(135deg, #E53935, #E8A200, #2E9B34, #1E88E5);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-.dark .text-gradient-ludo {
-  background-image: linear-gradient(135deg, #FF6B62, #FFD54F, #66BB6A, #64B5F6);
-}
-
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .text-gradient-ludo {
-    -webkit-text-fill-color: transparent;
+    /* Painted first, so the text stays readable if background-clip is
+       unsupported or forced-colors strips the gradient. */
+    color: var(--color-ludo-red);
+    background-image: linear-gradient(135deg, #E53935, #E8A200, #2E9B34, #1E88E5);
+    -webkit-background-clip: text;
+    background-clip: text;
   }
-}
 
-@media (forced-colors: active) {
-  .text-gradient-ludo {
-    -webkit-text-fill-color: currentColor;
-    background-image: none;
+  .dark .text-gradient-ludo {
+    background-image: linear-gradient(135deg, #FF6B62, #FFD54F, #66BB6A, #64B5F6);
   }
-}
 
-/* Respects the iPhone home indicator / Android gesture bar. */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .text-gradient-ludo {
+      -webkit-text-fill-color: transparent;
+    }
+  }
 
-.pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
-}
+  @media (forced-colors: active) {
+    .text-gradient-ludo {
+      -webkit-text-fill-color: currentColor;
+      background-image: none;
+    }
+  }
 
-.scrollbar-none {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+  /* Respects the iPhone home indicator / Android gesture bar. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* `both` (not `forwards`) — with a delay, `forwards` leaves the element at
+     its natural opacity during the wait, so it flashes in and restarts. */
+  .animate-fade-in     { animation: fade-in 0.5s var(--ease-smooth) both; }
+  .animate-fade-in-up  { animation: fade-in-up 0.6s var(--ease-smooth) both; }
+  .animate-slide-right { animation: slide-in-right 0.5s var(--ease-smooth) both; }
+  .animate-pulse-glow  { animation: pulse-glow 2s ease-in-out infinite; }
+  .animate-float       { animation: float 3s ease-in-out infinite; }
+  .animate-spin-slow   { animation: spin-slow 8s linear infinite; }
+
+  /* Named `anim-delay-*`, not `delay-*`: Tailwind already ships `delay-*`
+     for transition-delay, and shadowing it broke every transition that
+     wanted a delay. */
+  .anim-delay-100 { animation-delay: 100ms; }
+  .anim-delay-200 { animation-delay: 200ms; }
+  .anim-delay-300 { animation-delay: 300ms; }
+  .anim-delay-400 { animation-delay: 400ms; }
+  .anim-delay-500 { animation-delay: 500ms; }
 }
 
 /* ═══════════════════════════════════
@@ -329,7 +411,7 @@ select:focus-visible {
 }
 
 @keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(20px); }
+  from { opacity: 0; transform: translateX(-20px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
@@ -352,47 +434,11 @@ select:focus-visible {
   100% { transform: translateX(100%); }
 }
 
-/* `both` (not `forwards`) — with a delay, `forwards` leaves the element at
-   its natural opacity during the wait, so it flashes in and then restarts. */
-.animate-fade-in     { animation: fade-in 0.5s var(--ease-smooth) both; }
-.animate-fade-in-up  { animation: fade-in-up 0.6s var(--ease-smooth) both; }
-.animate-slide-right { animation: slide-in-right 0.5s var(--ease-smooth) both; }
-.animate-pulse-glow  { animation: pulse-glow 2s ease-in-out infinite; }
-.animate-float       { animation: float 3s ease-in-out infinite; }
-.animate-spin-slow   { animation: spin-slow 8s linear infinite; }
-
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-500 { animation-delay: 500ms; }
-
-/* Loading skeleton */
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background-color: color-mix(in srgb, var(--color-ink-faint) 14%, transparent);
-  border-radius: var(--radius-md);
-}
-
-.skeleton::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--color-ink-faint) 12%, transparent),
-    transparent
-  );
-  animation: shimmer 1.6s infinite;
-}
-
 /* ═══════════════════════════════════
    Reduced Motion
-   Several animations here loop forever; for anyone who asked the OS to
-   calm motion down, they are a genuine problem, not a nicety.
+   Several animations here loop forever; for anyone who asked the OS to calm
+   motion down, they are a genuine problem, not a nicety. Unlayered and
+   `!important` so nothing can reintroduce the motion.
    ═══════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -411,27 +457,6 @@ select:focus-visible {
   .card-base:hover {
     transform: none;
   }
-}
-
-/* ═══════════════════════════════════
-   Scrollbar
-   ═══════════════════════════════════ */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
-  border-radius: 100px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-ink-faint);
 }
 
 /* ═══════════════════════════════════
