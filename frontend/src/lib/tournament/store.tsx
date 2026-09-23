@@ -2,13 +2,14 @@
 
 import { useSyncExternalStore, type ReactNode } from "react"
 import {
-  buildRounds,
   generatePassword,
   generateTeamCode,
   isRoundComplete,
   pairTeams,
   shuffle,
   undoBlockedReason,
+  roundLabel,
+  unpairedIn,
   winnersOf,
 } from "./engine"
 import type { Match, Player, Team, TeamNotice, TournamentState } from "./types"
@@ -150,13 +151,25 @@ export function resetEverything() {
   commit((prev) => ({ ...EMPTY, adminSignedIn: prev.adminSignedIn }))
 }
 
+/**
+ * Register a team.
+ *
+ * Allowed while the tournament is running, not only during setup. Late
+ * entrants turn up — someone arrives after the draw, or a round comes out
+ * odd and the organiser would rather add a team than hand out a bye. A team
+ * added mid-tournament joins the current round unpaired, and the organiser
+ * decides who it plays.
+ */
 export function addTeam({ name, players }: { name: string; players: Player[] }): Team | null {
   let created: Team | null = null
   commit((prev) => {
-    if (!prev.tournament || prev.tournament.phase !== "setup") return prev
+    if (!prev.tournament || prev.tournament.phase === "complete") return prev
     const trimmed = name.trim()
     if (!trimmed) return prev
     if (prev.teams.some((t) => t.name.toLowerCase() === trimmed.toLowerCase())) return prev
+
+    const running = prev.tournament.phase === "running"
+    const joinRound = running ? prev.tournament.currentRound : 0
 
     const code = generateTeamCode(new Set(prev.teams.map((t) => t.code)))
     created = {
@@ -169,9 +182,24 @@ export function addTeam({ name, players }: { name: string; players: Player[] }):
         .filter((p) => p.name),
       status: "active",
       eliminatedInRound: null,
+      joinedInRound: joinRound,
       registeredAt: new Date().toISOString(),
     }
-    return { ...prev, teams: [...prev.teams, created] }
+
+    return {
+      ...prev,
+      teams: [...prev.teams, created],
+      tournament: running
+        ? {
+            ...prev.tournament,
+            rounds: prev.tournament.rounds.map((r) =>
+              r.index === joinRound
+                ? { ...r, entrants: [...r.entrants, created!.id] }
+                : r,
+            ),
+          }
+        : prev.tournament,
+    }
   })
   return created
 }
@@ -226,11 +254,138 @@ export function drawFirstRound(mode: "random" | "seeded" = "random") {
       tournament: {
         ...prev.tournament,
         phase: "running",
-        rounds: buildRounds(prev.teams.length),
+        // Only the opening round is created here. The rest are drawn as the
+        // previous one finishes, so a late entrant changes the path from
+        // that point instead of invalidating a precomputed bracket.
+        rounds: [{ index: 0, entrants: ids, published: false, publishedAt: null }],
         currentRound: 0,
         drawMode: mode,
       },
       matches: pairTeams(order, 0, "M", mode === "seeded" ? "seeded" : "sequential"),
+    }
+  })
+}
+
+/* ── Manual control over the current round ───────────────────
+   Automatic pairing is a starting point, not a rule. The organiser can take
+   a match apart, pair any two waiting teams, and choose who sits out.
+   ───────────────────────────────────────────────────────────── */
+
+/** Break a match back into two waiting teams. */
+export function unpairMatch(matchId: string) {
+  commit((prev) => {
+    const match = prev.matches.find((m) => m.id === matchId)
+    if (!match) return prev
+    // Unpairing something already played would erase a result silently.
+    if (match.status === "live" || match.status === "completed") return prev
+    return { ...prev, matches: prev.matches.filter((m) => m.id !== matchId) }
+  })
+}
+
+/** Pair two waiting teams in the current round. */
+export function createMatch(teamAId: string, teamBId: string) {
+  commit((prev) => {
+    if (!prev.tournament || teamAId === teamBId) return prev
+    const roundIndex = prev.tournament.currentRound
+    const round = prev.tournament.rounds[roundIndex]
+    if (!round) return prev
+
+    const waiting = new Set(unpairedIn(round, prev.matches))
+    if (!waiting.has(teamAId) || !waiting.has(teamBId)) return prev
+
+    return {
+      ...prev,
+      matches: [
+        ...prev.matches,
+        {
+          id: `M-R${roundIndex + 1}-X${Date.now().toString(36).slice(-4)}`,
+          roundIndex,
+          teamAId,
+          teamBId,
+          table: "",
+          startsAt: "",
+          status: "unscheduled" as const,
+          winnerId: null,
+          startedAt: null,
+          completedAt: null,
+        },
+      ],
+    }
+  })
+}
+
+/**
+ * Give the bye to a specific team.
+ *
+ * Passing `null` removes the bye, putting that team back in the pool to be
+ * paired. Only one bye can exist in a round.
+ */
+export function setBye(teamId: string | null) {
+  commit((prev) => {
+    if (!prev.tournament) return prev
+    const roundIndex = prev.tournament.currentRound
+    const round = prev.tournament.rounds[roundIndex]
+    if (!round) return prev
+
+    const withoutBye = prev.matches.filter(
+      (m) => !(m.roundIndex === roundIndex && m.status === "bye"),
+    )
+    if (teamId === null) return { ...prev, matches: withoutBye }
+
+    const waiting = new Set(unpairedIn({ ...round }, withoutBye))
+    if (!waiting.has(teamId)) return prev
+
+    return {
+      ...prev,
+      matches: [
+        ...withoutBye,
+        {
+          id: `M-R${roundIndex + 1}-BYE`,
+          roundIndex,
+          teamAId: teamId,
+          teamBId: null,
+          table: "—",
+          startsAt: "",
+          status: "bye" as const,
+          winnerId: teamId,
+          startedAt: null,
+          completedAt: new Date().toISOString(),
+        },
+      ],
+    }
+  })
+}
+
+/** Throw the current round's pairings away and draw them again. */
+export function redrawCurrentRound(mode: "random" | "seeded" = "random") {
+  commit((prev) => {
+    if (!prev.tournament) return prev
+    const roundIndex = prev.tournament.currentRound
+    const round = prev.tournament.rounds[roundIndex]
+    if (!round) return prev
+
+    // Refuse once anything in the round has been played, or the result
+    // would vanish along with the pairing.
+    const started = prev.matches.some(
+      (m) =>
+        m.roundIndex === roundIndex &&
+        (m.status === "live" || m.status === "completed"),
+    )
+    if (started) return prev
+
+    const order = mode === "seeded" ? round.entrants : shuffle(round.entrants)
+    return {
+      ...prev,
+      matches: [
+        ...prev.matches.filter((m) => m.roundIndex !== roundIndex),
+        ...pairTeams(order, roundIndex, "M", mode === "seeded" ? "seeded" : "sequential"),
+      ],
+      tournament: {
+        ...prev.tournament,
+        rounds: prev.tournament.rounds.map((r) =>
+          r.index === roundIndex ? { ...r, published: false, publishedAt: null } : r,
+        ),
+      },
     }
   })
 }
@@ -301,13 +456,13 @@ export function publishRound(roundIndex: number) {
           m.status === "bye"
             ? notice(
                 teamId,
-                `${round.name} — you have a bye`,
+                `${roundLabel(round)} — you have a bye`,
                 "An odd number of teams reached this round, so you advance without playing.",
                 "success",
               )
             : notice(
                 teamId,
-                `${round.name} fixture published`,
+                `${roundLabel(round)} fixture published`,
                 "Your match is set. Check My Matches for the table and kickoff time.",
                 "info",
               ),
@@ -459,10 +614,14 @@ export function revertLastAdvance() {
       tournament: {
         ...t,
         currentRound: dropped - 1,
-        rounds: t.rounds.map((r) =>
-          r.index === dropped ? { ...r, published: false, publishedAt: null } : r,
-        ),
+        rounds: t.rounds.filter((r) => r.index < dropped),
       },
+      // Teams knocked out in the round we are dropping are back in.
+      teams: prev.teams.map((x) =>
+        x.eliminatedInRound === dropped - 1
+          ? { ...x, status: "active", eliminatedInRound: null }
+          : x,
+      ),
     }
   })
 }
@@ -492,9 +651,20 @@ export function advanceRound() {
 
     const nextIndex = current + 1
     const alreadyDrawn = prev.matches.some((m) => m.roundIndex === nextIndex)
+    const existing = prev.tournament.rounds.find((r) => r.index === nextIndex)
+
     return {
       ...prev,
-      tournament: { ...prev.tournament, currentRound: nextIndex },
+      tournament: {
+        ...prev.tournament,
+        currentRound: nextIndex,
+        rounds: existing
+          ? prev.tournament.rounds
+          : [
+              ...prev.tournament.rounds,
+              { index: nextIndex, entrants: winners, published: false, publishedAt: null },
+            ],
+      },
       matches: alreadyDrawn
         ? prev.matches
         : [...prev.matches, ...pairTeams(winners, nextIndex, "M")],
@@ -555,6 +725,10 @@ const ACTIONS = {
   undoResult,
   revertLastAdvance,
   advanceRound,
+  unpairMatch,
+  createMatch,
+  setBye,
+  redrawCurrentRound,
   signInTeam,
   signOutTeam,
   signInAdmin,

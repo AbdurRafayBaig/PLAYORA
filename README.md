@@ -25,14 +25,19 @@ PLAYORA covers three audiences from one codebase:
 2. **Register teams.** Each team is issued a Team ID and an 8-character
    password on the spot; the organiser reads them out at the desk, or prints
    the whole credential sheet.
-3. **Draw.** One tap pairs every team at random and locks the field. Round
-   sizes halve automatically: **48 -> 24 -> 12 -> 6 -> 3 -> 2 -> 1**. An odd
-   round gives one team a bye.
-4. **Assign** a table and kickoff time to every match.
-5. **Publish.** Only then do fixtures become visible to teams and to the
+3. **Draw.** Pick Random or Seeded; one tap pairs the field. Round sizes
+   halve automatically — 50 teams runs **50 -> 25 -> 13 -> 7 -> 4 -> 2 -> 1**,
+   so 25 matches, then 12 matches plus a bye.
+4. **Rearrange it if you want to.** Nothing is forced. Unpair any match,
+   pair any two waiting teams yourself, redraw the round, or choose exactly
+   which team takes the bye. When a round comes out odd you can also just
+   register a late entrant into it instead of handing anyone a free pass.
+5. **Assign** a table and kickoff time to every match.
+6. **Publish.** Only then do fixtures become visible to teams and to the
    public — and publishing is what notifies the teams.
-6. **Run.** Start each match (it goes live with a clock), record who advanced,
-   then advance the round. Repeat to a champion.
+7. **Run.** Start each match (it goes live with a clock), record who advanced,
+   then advance the round. Repeat to a champion. A result recorded in error
+   can be undone, and the whole round stepped back if you have already moved on.
 
 ### No points table — on purpose
 
@@ -169,14 +174,15 @@ same `NEXT_PUBLIC_SITE_URL` variable. Netlify needs
 ```bash
 cd frontend
 npm run check      # eslint + tsc --noEmit + next build
-npm run test:e2e   # 95 assertions against the built app in real Chrome
+npm run test:e2e   # 114 assertions against the built app in real Chrome
 ```
 
 `test:e2e` launches headless Chrome and drives the production build over the
 DevTools Protocol — no test framework, no automation dependency. Three
-suites: a full tournament played to a champion, an adversarial pass where
-every check maps to a defect that was once shipped, and an accessibility and
-layout sweep of every route in both themes. See
+suites: a full tournament played to a champion, a 50-team ladder proving
+the round arithmetic and the manual pairing controls, an adversarial pass
+where every check maps to a defect that was once shipped, and an
+accessibility and layout sweep of every route in both themes. See
 [`frontend/tests/README.md`](frontend/tests/README.md).
 
 Each release of this branch was verified with:
@@ -184,7 +190,7 @@ Each release of this branch was verified with:
 - `next build` — every route prerenders, no type errors
 - `eslint` — clean, including the React 19 hooks rules
 - every route returning 200, and the 404 page rendering for unknown paths
-- `npm run test:e2e` — 95 assertions, zero failures
+- `npm run test:e2e` — 114 assertions, zero failures
 
 ---
 

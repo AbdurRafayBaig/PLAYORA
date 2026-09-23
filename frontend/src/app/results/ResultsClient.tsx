@@ -7,6 +7,7 @@ import { MatchCard } from "@/components/tournament/MatchCard"
 import { NoTournament } from "@/components/tournament/NoTournament"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useTournament } from "@/lib/tournament/store"
+import { roundLabel } from "@/lib/tournament/engine"
 import { pluralise } from "@/lib/utils"
 
 export function ResultsClient() {
@@ -22,7 +23,10 @@ export function ResultsClient() {
   }
 
   const done = matches.filter((m) => m.status === "completed")
-  const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
+  const roundName = (i: number) => {
+    const r = tournament?.rounds[i]
+    return r ? roundLabel(r) : `Round ${i + 1}`
+  }
 
   // Newest round first — the thing people come back to check.
   const byRound = [...new Set(done.map((m) => m.roundIndex))].sort((a, b) => b - a)

@@ -1,14 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { Calendar, Send, CircleAlert, Lock, CheckCircle2 } from "lucide-react"
+import { Calendar, Send, CircleAlert, Lock, CheckCircle2, Unlink } from "lucide-react"
 import { AdminPage } from "@/components/ui/AdminPage"
 import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { StatusBadge } from "@/components/cards/StatusBadge"
 import { useTournament } from "@/lib/tournament/store"
-import { isRoundFullyScheduled, initials } from "@/lib/tournament/engine"
+import { isRoundFullyScheduled, initials,
+  roundLabel,
+} from "@/lib/tournament/engine"
 import { cn } from "@/lib/utils"
+import { RoundControls } from "./RoundControls"
 import type { Match, Round } from "@/lib/tournament/types"
 
 /** Turns an ISO string into the value a datetime-local input wants. */
@@ -20,9 +23,17 @@ function toLocalInput(iso: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-function MatchAssignRow({ match, round }: { match: Match; round: Round }) {
+function MatchAssignRow({
+  match,
+  round,
+  editable: roundEditable,
+}: {
+  match: Match
+  round: Round
+  editable: boolean
+}) {
   const published = round.published
-  const { teams, scheduleMatch } = useTournament()
+  const { teams, scheduleMatch, unpairMatch } = useTournament()
   const nameOf = (id: string | null) =>
     id ? (teams.find((t) => t.id === id)?.name ?? "Unknown") : "Bye"
 
@@ -110,6 +121,19 @@ function MatchAssignRow({ match, round }: { match: Match; round: Round }) {
         </p>
       )}
 
+      {roundEditable && editable && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => unpairMatch(match.id)}
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-ink-muted hover:text-ludo-flame-ink transition-colors cursor-pointer"
+          >
+            <Unlink aria-hidden="true" className="w-3.5 h-3.5" />
+            Unpair — put both teams back in the pool
+          </button>
+        </div>
+      )}
+
       {published && editable && (
         <p className="text-[11px] text-ink-muted flex items-start gap-1.5">
           <CircleAlert aria-hidden="true" className="w-3.5 h-3.5 shrink-0 mt-px" />
@@ -117,7 +141,7 @@ function MatchAssignRow({ match, round }: { match: Match; round: Round }) {
           both teams are notified — but they cannot be left empty.
         </p>
       )}
-      <span className="sr-only">{round.name}</span>
+      <span className="sr-only">{roundLabel(round)}</span>
     </li>
   )
 }
@@ -178,11 +202,12 @@ export function FixturesAdminClient() {
             <div className="px-4 py-3 border-b border-border flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="text-sm font-bold text-ink flex items-center gap-2">
-                  {round.name}
+                  {roundLabel(round)}
                   <StatusBadge status={round.published ? "published" : "draft"} />
                 </h2>
                 <p className="text-[11px] text-ink-muted mt-0.5">
-                  {inRound.length} matches · {round.size} teams
+                  {inRound.length} {inRound.length === 1 ? "fixture" : "fixtures"} ·{" "}
+                  {round.entrants.length} teams
                 </p>
               </div>
 
@@ -214,9 +239,17 @@ export function FixturesAdminClient() {
 
             <ul className={cn("divide-y divide-border list-none")}>
               {inRound.map((m) => (
-                <MatchAssignRow key={m.id} match={m} round={round} />
+                <MatchAssignRow
+                  key={m.id}
+                  match={m}
+                  round={round}
+                  editable={round.index === tournament.currentRound}
+                />
               ))}
             </ul>
+
+            {/* Only the round in play can be rearranged. */}
+            {round.index === tournament.currentRound && <RoundControls round={round} />}
           </section>
         )
       })}

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState"
 import { MatchCard } from "@/components/tournament/MatchCard"
 import { NoTournament } from "@/components/tournament/NoTournament"
 import { useTournament, usePublishedMatches } from "@/lib/tournament/store"
+import { roundLabel } from "@/lib/tournament/engine"
 import { CONTACT } from "@/lib/constants"
 import { pluralise } from "@/lib/utils"
 
@@ -16,7 +17,10 @@ export function LiveClient() {
 
   const live = published.filter((m) => m.status === "live")
   const next = published.filter((m) => m.status === "scheduled").slice(0, 4)
-  const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
+  const roundName = (i: number) => {
+    const r = tournament?.rounds[i]
+    return r ? roundLabel(r) : `Round ${i + 1}`
+  }
 
   if (!ready) {
     return (

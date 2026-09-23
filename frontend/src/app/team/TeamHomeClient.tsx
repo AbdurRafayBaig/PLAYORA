@@ -9,7 +9,7 @@ import { StatusBadge } from "@/components/cards/StatusBadge"
 import { Panel } from "@/components/ui/Panel"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useTournament, useSignedInTeam } from "@/lib/tournament/store"
-import { initials } from "@/lib/tournament/engine"
+import { initials, roundLabel } from "@/lib/tournament/engine"
 
 export function TeamHomeClient() {
   const { ready, tournament, teams, matches, notices } = useTournament()
@@ -28,7 +28,10 @@ export function TeamHomeClient() {
   // guard only narrows the type.
   if (!team) return null
 
-  const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
+  const roundName = (i: number) => {
+    const r = tournament?.rounds[i]
+    return r ? roundLabel(r) : `Round ${i + 1}`
+  }
   const published = new Set(
     (tournament?.rounds ?? []).filter((r) => r.published).map((r) => r.index),
   )

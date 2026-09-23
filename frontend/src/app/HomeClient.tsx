@@ -10,6 +10,7 @@ import { NoTournament } from "@/components/tournament/NoTournament"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { BRAND, CONTACT } from "@/lib/constants"
 import { useTournament, usePublishedMatches } from "@/lib/tournament/store"
+import { roundLabel } from "@/lib/tournament/engine"
 
 const FEATURES = [
   {
@@ -49,7 +50,11 @@ export function HomeClient() {
   const live = published.filter((m) => m.status === "live")
   const recent = published.filter((m) => m.status === "completed").slice(-2).reverse()
   const upcoming = published.filter((m) => m.status === "scheduled")
-  const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
+  const round = (i: number) => tournament?.rounds[i]
+  const roundName = (i: number) => {
+    const r = round(i)
+    return r ? roundLabel(r) : `Round ${i + 1}`
+  }
   const champion = tournament?.championId
     ? teams.find((t) => t.id === tournament.championId)
     : null

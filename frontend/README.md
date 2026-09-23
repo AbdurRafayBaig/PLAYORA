@@ -12,7 +12,7 @@ npm run start      # serve the production build
 npm run lint       # eslint
 npm run typecheck  # tsc --noEmit
 npm run check      # lint + typecheck + build, in the order CI would run them
-npm run test:e2e   # drive the built app in real Chrome — see tests/README.md
+npm run test:e2e   # 114 assertions in real Chrome — see tests/README.md
 ```
 
 `test:e2e` runs against a **production build**, not the dev server. Several
@@ -61,11 +61,21 @@ tournament, registers teams, draws the bracket, assigns tables and times, and
 publishes each round. Until they do, every public page shows an honest empty
 state rather than invented fixtures.
 
-**Single elimination, no points table.** `engine.ts` derives round sizes by
-halving with `Math.ceil` — 48 → 24 → 12 → 6 → 3 → 2 → 1 — so an odd round
-falls out naturally as a bye rather than needing a special case. A league
-table would be meaningless here: every surviving team has won every match it
-played, so they would all be level. Progress is depth in the bracket.
+**Single elimination, no points table.** Round sizes halve with `Math.ceil`,
+so 50 teams runs 50 → 25 → 13 → 7 → 4 → 2 → 1. Only the opening round is
+created at the draw; each later round is built from the previous round's
+winners, which is what lets a late entrant change the path from that point
+instead of invalidating a precomputed bracket. A league table would be
+meaningless here — every surviving team has won every match it played, so
+they would all be level. Progress is depth in the bracket.
+
+**Rounds are the organiser's, not the algorithm's.** Automatic pairing is a
+starting point. From Fixtures the organiser can unpair any match, pair any
+two waiting teams, redraw the round, choose exactly which team takes the bye
+when the field is odd — or register a late entrant into the round in play
+rather than handing out a free pass at all. `Round.entrants` is the source
+of truth; a team in it without a match is simply waiting, and the dashboard
+says so until it has one.
 
 **Publishing is the gate.** A round is invisible to teams and to the public
 until every match in it has a table *and* a kickoff time, and the organiser

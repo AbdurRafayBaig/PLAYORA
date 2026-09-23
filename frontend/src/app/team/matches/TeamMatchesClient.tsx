@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { MatchCard } from "@/components/tournament/MatchCard"
 import { useSignedInTeam, useTournament } from "@/lib/tournament/store"
+import { roundLabel } from "@/lib/tournament/engine"
 import { pluralise } from "@/lib/utils"
 
 export function TeamMatchesClient() {
@@ -23,7 +24,10 @@ export function TeamMatchesClient() {
   // guard only narrows the type.
   if (!team) return null
 
-  const roundName = (i: number) => tournament?.rounds[i]?.name ?? `Round ${i + 1}`
+  const roundName = (i: number) => {
+    const r = tournament?.rounds[i]
+    return r ? roundLabel(r) : `Round ${i + 1}`
+  }
 
   // A team only ever sees published rounds — the same rule the public pages
   // follow, so nobody is sent to a table that is still being arranged.

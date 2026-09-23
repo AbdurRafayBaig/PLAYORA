@@ -34,6 +34,8 @@ export interface Team {
   status: TeamStatus
   /** Index of the round in which the team lost. */
   eliminatedInRound: number | null
+  /** Round the team entered at. 0 for everyone registered before the draw. */
+  joinedInRound: number
   registeredAt: string
 }
 
@@ -55,9 +57,16 @@ export interface Match {
 
 export interface Round {
   index: number
-  /** How many teams enter this round: 48, 24, 12, 6, 3, 2, 1. */
-  size: number
-  name: string
+  /**
+   * The teams competing in this round.
+   *
+   * The source of truth, rather than a precomputed size. The organiser can
+   * add a late entrant mid-tournament, unpair a match and repair it
+   * differently, or hand the bye to a particular team — so the field for a
+   * round is not knowable when the tournament is drawn. Any team in here
+   * without a match is "unpaired" and waiting to be given one.
+   */
+  entrants: string[]
   /** Fixtures stay hidden from teams until the admin publishes the round. */
   published: boolean
   publishedAt: string | null

@@ -147,8 +147,12 @@ export function TeamsClient() {
     )
   }
 
-  // The draw fixes the field; adding a team afterwards would invalidate it.
+  // Teams can no longer be *removed* after the draw — that would leave a
+  // hole in a bracket someone has already been told about. Adding is still
+  // allowed: late entrants turn up, and an odd round is often better solved
+  // with one more team than with a bye.
   const locked = tournament.phase !== "setup"
+  const running = tournament.phase === "running"
 
   function handleAdd(e: React.FormEvent) {
     e.preventDefault()
@@ -191,13 +195,15 @@ export function TeamsClient() {
         ) : undefined
       }
     >
-      {locked ? (
+      {locked && (
         <p className="text-[11px] text-ink-muted bg-ludo-mango/15 border border-ludo-mango/30 rounded-xl px-3.5 py-2.5 leading-relaxed">
-          The draw has been made, so the field is locked — teams can no longer
-          be added or removed. Passwords can still be reissued if a captain
-          loses theirs.
+          {running
+            ? "The draw has been made. A team added now joins the round in play unpaired — go to Fixtures to choose who it plays. Existing teams can no longer be removed, because the bracket already refers to them."
+            : "This tournament is finished. Teams are read-only."}
         </p>
-      ) : (
+      )}
+
+      {tournament.phase === "complete" ? null : (
         <form onSubmit={handleAdd} className="card-base p-5 space-y-4 no-print">
           <h2 className="text-sm font-bold text-ink flex items-center gap-2">
             <Plus aria-hidden="true" className="w-4 h-4 text-ludo-flame-ink" />
@@ -246,7 +252,7 @@ export function TeamsClient() {
             <div className="flex items-end">
               <Button type="submit" variant="primary" size="md" className="w-full">
                 <Plus aria-hidden="true" className="w-4 h-4" />
-                Add team
+                {running ? "Add to current round" : "Add team"}
               </Button>
             </div>
           </div>

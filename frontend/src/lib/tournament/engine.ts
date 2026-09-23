@@ -36,15 +36,42 @@ export function roundName(size: number, isLast: boolean): string {
   return `Round of ${size}`
 }
 
-export function buildRounds(teamCount: number): Round[] {
-  const sizes = roundSizes(teamCount)
-  return sizes.slice(0, -1).map((size, i) => ({
-    index: i,
-    size,
-    name: roundName(size, false),
-    published: false,
-    publishedAt: null,
-  }))
+/**
+ * Label for a round, derived from who is actually in it.
+ *
+ * Derived rather than stored, because the field can change after the draw:
+ * a late entrant joining a 3-team semi-final makes it a 4-team semi-final,
+ * and a stored name would go stale.
+ */
+export function roundLabel(round: Round): string {
+  return roundName(round.entrants.length, false)
+}
+
+/** How many real matches and byes a field of `n` produces. */
+export function fixtureShape(n: number): { matches: number; byes: number } {
+  return { matches: Math.floor(n / 2), byes: n % 2 }
+}
+
+/**
+ * The remaining ladder from a field of `n`, e.g. 50 → 25 → 13 → 7 → 4 → 2 → 1.
+ *
+ * Projected, not committed: rounds are created one at a time as the previous
+ * one finishes, so that adding or removing a team mid-tournament changes the
+ * path from that point rather than invalidating a precomputed bracket.
+ */
+export function projectedPath(n: number): number[] {
+  return roundSizes(n)
+}
+
+/** Teams in a round that have not been given a match yet. */
+export function unpairedIn(round: Round, matches: Match[]): string[] {
+  const placed = new Set<string>()
+  for (const m of matches) {
+    if (m.roundIndex !== round.index) continue
+    placed.add(m.teamAId)
+    if (m.teamBId) placed.add(m.teamBId)
+  }
+  return round.entrants.filter((id) => !placed.has(id))
 }
 
 /** Fisher–Yates, so the draw is not biased toward registration order. */
@@ -175,9 +202,21 @@ export function winnersOf(matches: Match[], roundIndex: number): string[] {
     .filter((id): id is string => Boolean(id))
 }
 
-export function isRoundComplete(matches: Match[], roundIndex: number): boolean {
+/**
+ * A round is finished when every match has a winner *and* nobody is still
+ * waiting to be paired. The second half matters once the organiser can add
+ * a team mid-round: without it, Advance would quietly drop the late entrant.
+ */
+export function isRoundComplete(
+  matches: Match[],
+  roundIndex: number,
+  round?: Round,
+): boolean {
   const inRound = matches.filter((m) => m.roundIndex === roundIndex)
-  return inRound.length > 0 && inRound.every((m) => m.winnerId !== null)
+  if (inRound.length === 0) return false
+  if (!inRound.every((m) => m.winnerId !== null)) return false
+  if (round && unpairedIn(round, matches).length > 0) return false
+  return true
 }
 
 /** Every real match has a table and a kickoff time. Byes do not need one. */

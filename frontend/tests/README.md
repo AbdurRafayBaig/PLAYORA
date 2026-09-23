@@ -45,6 +45,14 @@ results, advance, repeat. Then signs in as the champion and checks the
 captain's view. Asserts the two properties most likely to break silently:
 every match ends with exactly one winner, and exactly one team is left.
 
+**`ladder.mjs`** — the round arithmetic and the organiser's control over it,
+with a real 50-team field. 50 teams is 25 matches; those 25 winners are an
+odd field, so the next round is 12 matches plus a bye — 13 fixtures, not 12
+and a team quietly dropped. Then proves none of it is automatic-only:
+unpairing a match, pairing two waiting teams by hand, taking the bye back
+and giving it to a chosen team, and registering a late entrant straight into
+the round in play.
+
 **`adversarial.mjs`** — everything a confused captain, a hurried organiser or
 someone editing the URL bar would do. Every check here corresponds to a
 defect that was actually shipped at some point, so they are regression

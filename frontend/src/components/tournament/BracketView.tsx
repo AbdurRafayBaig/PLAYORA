@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { Crown, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { initials } from "@/lib/tournament/engine"
+import { initials, roundLabel } from "@/lib/tournament/engine"
 import type { Match, Round, Team } from "@/lib/tournament/types"
 
 /**
@@ -69,8 +69,8 @@ export function BracketView({
                   : "bg-surface-raised border-border text-ink-muted hover:text-ink",
               )}
             >
-              {r.name}
-              <span className="ml-1.5 text-ink-faint">{r.size}</span>
+              {roundLabel(r)}
+              <span className="ml-1.5 text-ink-faint">{r.entrants.length}</span>
             </button>
           ))}
         </div>
@@ -108,7 +108,7 @@ export function BracketView({
                   id={`bracket-round-${round.index}`}
                   className="text-sm font-bold text-ink flex items-center gap-2"
                 >
-                  {round.name}
+                  {roundLabel(round)}
                   {isCurrent && (
                     <span className="text-[10px] font-bold uppercase tracking-wider text-ludo-flame-ink">
                       In play
@@ -116,7 +116,7 @@ export function BracketView({
                   )}
                 </h2>
                 <p className="text-[11px] text-ink-muted">
-                  {round.size} {round.size === 1 ? "team" : "teams"}
+                  {round.entrants.length} {round.entrants.length === 1 ? "team" : "teams"}
                   {!round.published && !notDrawn && (
                     <span className="inline-flex items-center gap-1 ml-2 text-ink-faint">
                       <Lock aria-hidden="true" className="w-3 h-3" />

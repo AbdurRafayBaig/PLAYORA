@@ -15,6 +15,7 @@ import {
   initials,
   isRoundComplete,
   undoBlockedReason,
+  roundLabel,
 } from "@/lib/tournament/engine"
 import { cn } from "@/lib/utils"
 import { useNow } from "@/lib/useNow"
@@ -42,7 +43,8 @@ function ScorerCard({ match }: { match: Match }) {
   const nameOf = (id: string | null) =>
     id ? (teams.find((t) => t.id === id)?.name ?? "Unknown") : "Bye"
 
-  const roundName = tournament?.rounds[match.roundIndex]?.name ?? ""
+  const matchRound = tournament?.rounds[match.roundIndex]
+  const roundName = matchRound ? roundLabel(matchRound) : ""
   const isLive = match.status === "live"
 
   return (
@@ -206,7 +208,7 @@ export function LiveAdminClient() {
     <AdminPage
       eyebrow="Run the tournament"
       title="Live Control"
-      description={`${round?.name ?? ""} · ${tournament.venue}`}
+      description={`${round ? roundLabel(round) : ""} · ${tournament.venue}`}
       actions={<StatusBadge status={round?.published ? "published" : "draft"} size="md" />}
     >
       {!round?.published && (
@@ -220,7 +222,7 @@ export function LiveAdminClient() {
       {roundDone && (
         <div className="card-base border-l-4 border-l-ludo-lemon p-5 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-sm font-bold text-ink">{round?.name} is finished</h2>
+            <h2 className="text-sm font-bold text-ink">{round ? roundLabel(round) : ""} is finished</h2>
             <p className="text-xs text-ink-muted mt-0.5">
               Every result is recorded. Advance to draw the next round from the
               winners.
@@ -245,7 +247,7 @@ export function LiveAdminClient() {
             Stepping back deletes{" "}
             {tournament.phase === "complete"
               ? "the champion and reopens the final"
-              : `the ${round?.name ?? "current round"} draw and returns to the previous round`}
+              : `the ${round ? roundLabel(round) : "current round"} draw and returns to the previous round`}
             , so a result recorded in error can be corrected. Fixtures for the
             deleted round are unpublished and will need reassigning.
           </p>

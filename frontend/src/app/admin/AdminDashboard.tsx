@@ -13,7 +13,14 @@ import { Button } from "@/components/ui/Button"
 import { StatusBadge } from "@/components/cards/StatusBadge"
 import { MatchCard } from "@/components/tournament/MatchCard"
 import { useTournament } from "@/lib/tournament/store"
-import { isRoundComplete, isRoundFullyScheduled, roundSizes } from "@/lib/tournament/engine"
+import {
+  fixtureShape,
+  isRoundComplete,
+  isRoundFullyScheduled,
+  projectedPath,
+  roundLabel,
+  unpairedIn,
+} from "@/lib/tournament/engine"
 import { CONTACT } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
@@ -78,7 +85,7 @@ function SetupPhase() {
   const { teams, drawFirstRound } = useTournament()
   const [mode, setMode] = useState<"random" | "seeded">("random")
   const enough = teams.length >= 2
-  const path = enough ? roundSizes(teams.length).join(" → ") : "—"
+  const path = enough ? projectedPath(teams.length).join(" → ") : "—"
 
   return (
     <div className="space-y-6">
@@ -104,10 +111,11 @@ function SetupPhase() {
           <p className="mt-4 text-xs text-ink-muted">
             Knockout path with {teams.length} teams:{" "}
             <span className="font-bold text-ink">{path}</span>
-            {roundSizes(teams.length).some((n) => n % 2 === 1 && n > 1) && (
+            {projectedPath(teams.length).some((n) => n % 2 === 1 && n > 1) && (
               <span className="block mt-1 text-ludo-mango-ink">
-                An odd round is coming up, so one team will receive a bye and
-                advance without playing. PLAYORA assigns it automatically.
+                An odd round is coming up, so one team cannot be paired. You
+                choose what happens: hand that team a bye, or register a late
+                entrant to even the numbers. Nothing is decided for you.
               </span>
             )}
           </p>
@@ -193,7 +201,9 @@ function RunningPhase() {
   const inRound = matches.filter((m) => m.roundIndex === tournament.currentRound)
   const live = matches.filter((m) => m.status === "live")
   const scheduled = isRoundFullyScheduled(matches, tournament.currentRound)
-  const complete = isRoundComplete(matches, tournament.currentRound)
+  const complete = isRoundComplete(matches, tournament.currentRound, round)
+  const waiting = round ? unpairedIn(round, matches) : []
+  const shape = round ? fixtureShape(round.entrants.length) : { matches: 0, byes: 0 }
   const stillIn = teams.filter((t) => t.status !== "eliminated").length
   const played = matches.filter((m) => m.status === "completed").length
 
@@ -201,7 +211,13 @@ function RunningPhase() {
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard icon={<Users className="w-5 h-5" />} label="Teams still in" value={stillIn} hint={`${teams.length} registered`} accentColor="red" />
-        <KPICard icon={<GitBranch className="w-5 h-5" />} label="Current round" value={round?.name ?? "—"} accentColor="blue" />
+        <KPICard
+          icon={<GitBranch className="w-5 h-5" />}
+          label="Current round"
+          value={round ? roundLabel(round) : "—"}
+          hint={round ? `${round.entrants.length} teams · ${shape.matches} matches${shape.byes ? " + 1 bye" : ""}` : undefined}
+          accentColor="blue"
+        />
         <KPICard icon={<Trophy className="w-5 h-5" />} label="Matches played" value={played} accentColor="yellow" />
         <KPICard icon={<Radio className="w-5 h-5" />} label="Live now" value={live.length} accentColor="green" />
       </div>
@@ -218,10 +234,25 @@ function RunningPhase() {
           What to do next
         </h2>
 
-        {!scheduled ? (
+        {waiting.length > 0 ? (
           <>
             <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-              {round?.name} is drawn but not every match has a table and a
+              {waiting.length} {waiting.length === 1 ? "team is" : "teams are"}{" "}
+              waiting for a fixture in {round ? roundLabel(round) : "this round"}.
+              Pair them, or give one the bye, before scheduling.
+            </p>
+            <Link
+              href="/admin/fixtures"
+              className="mt-3 inline-flex items-center gap-1.5 px-5 py-3 rounded-xl bg-ludo-flame-solid text-white text-sm font-semibold hover:bg-ludo-flame-solid-hover transition-colors"
+            >
+              <Calendar aria-hidden="true" className="w-4 h-4" />
+              Pair the remaining teams
+            </Link>
+          </>
+        ) : !scheduled ? (
+          <>
+            <p className="text-xs text-ink-muted mt-1 leading-relaxed">
+              {round ? roundLabel(round) : ""} is drawn but not every match has a table and a
               kickoff time yet. Teams see nothing until the round is published.
             </p>
             <Link
@@ -235,7 +266,7 @@ function RunningPhase() {
         ) : !round?.published ? (
           <>
             <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-              Every {round?.name} match is assigned. Publishing notifies all the
+              Every {round ? roundLabel(round) : ""} match is assigned. Publishing notifies all the
               teams involved and makes the fixtures public.
             </p>
             <Button
@@ -245,13 +276,13 @@ function RunningPhase() {
               onClick={() => publishRound(tournament.currentRound)}
             >
               <ArrowRight aria-hidden="true" className="w-4 h-4" />
-              Publish {round?.name} &amp; notify teams
+              Publish {round ? roundLabel(round) : ""} &amp; notify teams
             </Button>
           </>
         ) : !complete ? (
           <>
             <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-              {round?.name} is published. Start each match and record who
+              {round ? roundLabel(round) : ""} is published. Start each match and record who
               advanced from the live control panel.
             </p>
             <Link
@@ -265,7 +296,7 @@ function RunningPhase() {
         ) : (
           <>
             <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-              Every {round?.name} result is in. Advancing draws the next round
+              Every {round ? roundLabel(round) : ""} result is in. Advancing draws the next round
               from the winners.
             </p>
             <Button variant="primary" size="md" className="mt-3" onClick={advanceRound}>
@@ -292,7 +323,7 @@ function RunningPhase() {
                 key={m.id}
                 match={m}
                 teams={teams}
-                roundName={tournament.rounds[m.roundIndex]?.name ?? ""}
+                roundName={(() => { const r = tournament.rounds[m.roundIndex]; return r ? roundLabel(r) : "" })()}
                 venue={tournament.venue}
               />
             ))}
@@ -301,13 +332,13 @@ function RunningPhase() {
       )}
 
       <Panel
-        title={`${round?.name ?? "Current round"} — ${inRound.length} matches`}
+        title={`${round ? roundLabel(round) : "Current round"} — ${inRound.length} fixtures`}
         icon={<Calendar aria-hidden="true" className="w-4 h-4 text-ludo-indigo-ink" />}
         action={<StatusBadge status={round?.published ? "published" : "draft"} />}
       >
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
           {inRound.map((m) => (
-            <MatchCard key={m.id} match={m} teams={teams} roundName={round?.name ?? ""}
+            <MatchCard key={m.id} match={m} teams={teams} roundName={round ? roundLabel(round) : ""}
             venue={tournament.venue} />
           ))}
         </div>

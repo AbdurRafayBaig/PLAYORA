@@ -44,9 +44,10 @@ if (existsSync(envLocal)) {
 const { connect, makeDriver } = await import('./lib/cdp.mjs')
 const tournament = await import('./suites/tournament.mjs')
 const adversarial = await import('./suites/adversarial.mjs')
+const ladder = await import('./suites/ladder.mjs')
 const accessibility = await import('./suites/accessibility.mjs')
 
-const SUITES = [tournament, adversarial, accessibility]
+const SUITES = [tournament, ladder, adversarial, accessibility]
 const SITE = (process.env.PLAYORA_URL || 'http://localhost:3000').replace(/\/$/, '')
 const PORT = 9222 + Math.floor(Math.random() * 300)
 

@@ -7,6 +7,7 @@ import { MatchCard } from "@/components/tournament/MatchCard"
 import { NoTournament } from "@/components/tournament/NoTournament"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useTournament } from "@/lib/tournament/store"
+import { roundLabel } from "@/lib/tournament/engine"
 import { CONTACT } from "@/lib/constants"
 import { pluralise } from "@/lib/utils"
 
@@ -65,14 +66,14 @@ export function FixturesClient() {
                   className="text-sm font-bold text-ink mb-3 flex items-center gap-2"
                 >
                   <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-ludo-indigo" />
-                  {round.name}
+                  {roundLabel(round)}
                   <span className="text-[10px] font-medium text-ink-muted">
                     ({pluralise(inRound.length, "match", "matches")})
                   </span>
                 </h2>
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                   {inRound.map((m) => (
-                    <MatchCard key={m.id} match={m} teams={teams} roundName={round.name}
+                    <MatchCard key={m.id} match={m} teams={teams} roundName={roundLabel(round)}
                     venue={tournament?.venue} />
                   ))}
                 </div>
