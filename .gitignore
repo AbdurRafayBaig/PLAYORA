@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+frontend/node_modules/
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+*.env
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+*.sqlite3
+
+# IDE / System
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.jetro/
+*.log
