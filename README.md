@@ -169,20 +169,22 @@ same `NEXT_PUBLIC_SITE_URL` variable. Netlify needs
 ```bash
 cd frontend
 npm run check      # eslint + tsc --noEmit + next build
+npm run test:e2e   # 95 assertions against the built app in real Chrome
 ```
+
+`test:e2e` launches headless Chrome and drives the production build over the
+DevTools Protocol — no test framework, no automation dependency. Three
+suites: a full tournament played to a champion, an adversarial pass where
+every check maps to a defect that was once shipped, and an accessibility and
+layout sweep of every route in both themes. See
+[`frontend/tests/README.md`](frontend/tests/README.md).
 
 Each release of this branch was verified with:
 
 - `next build` — every route prerenders, no type errors
 - `eslint` — clean, including the React 19 hooks rules
 - every route returning 200, and the 404 page rendering for unknown paths
-- a 35-step end-to-end run of a real tournament — create it, register six
-  teams, draw, schedule, publish, play every round, crown a champion, then
-  sign in as that team and confirm the portal is read-only
-- an automated pass at 320px and 390px confirming no horizontal overflow
-- a contrast and semantics sweep in **both** themes reporting zero issues
-  (accessible names, alt text, form labels, duplicate ids, heading order,
-  landmarks, computed contrast)
+- `npm run test:e2e` — 95 assertions, zero failures
 
 ---
 

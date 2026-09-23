@@ -8,6 +8,7 @@ import {
   isRoundComplete,
   pairTeams,
   shuffle,
+  undoBlockedReason,
   winnersOf,
 } from "./engine"
 import type { Match, Player, Team, TeamNotice, TournamentState } from "./types"
@@ -188,14 +189,37 @@ export function regeneratePassword(id: string): string {
   commit((prev) => ({
     ...prev,
     teams: prev.teams.map((t) => (t.id === id ? { ...t, password: next } : t)),
+    // The captain is the one who has to act on this, so tell them rather
+    // than leaving them to discover it at the next sign-in.
+    notices: [
+      notice(
+        id,
+        "Your password was changed",
+        "The organiser issued you a new password. Ask at the desk for it — your old one no longer works.",
+        "warning",
+      ),
+      ...prev.notices,
+    ],
   }))
   return next
 }
 
-export function drawFirstRound() {
+/**
+ * Draw the opening round.
+ *
+ * `random` shuffles the field. `seeded` keeps registration order as the
+ * seeding and pairs strongest against weakest, so the two teams the
+ * organiser rates highest cannot meet in round one — and the bye, if the
+ * field is odd, goes to the top seed rather than to whoever the shuffle
+ * happened to leave over.
+ */
+export function drawFirstRound(mode: "random" | "seeded" = "random") {
   commit((prev) => {
     if (!prev.tournament || prev.tournament.phase !== "setup") return prev
     if (prev.teams.length < 2) return prev
+
+    const ids = prev.teams.map((t) => t.id)
+    const order = mode === "seeded" ? ids : shuffle(ids)
 
     return {
       ...prev,
@@ -204,8 +228,9 @@ export function drawFirstRound() {
         phase: "running",
         rounds: buildRounds(prev.teams.length),
         currentRound: 0,
+        drawMode: mode,
       },
-      matches: pairTeams(shuffle(prev.teams.map((t) => t.id)), 0, "M"),
+      matches: pairTeams(order, 0, "M", mode === "seeded" ? "seeded" : "sequential"),
     }
   })
 }
@@ -355,6 +380,93 @@ export function recordWinner(matchId: string, winnerId: string) {
   })
 }
 
+/**
+ * Take back a recorded result.
+ *
+ * Refereeing mistakes happen, and without this the only remedy was wiping
+ * the whole tournament. Refused once the next round exists, because the
+ * loser's place in the bracket has already been handed to someone else —
+ * `revertLastAdvance` is the escape hatch for that.
+ */
+export function undoResult(matchId: string) {
+  commit((prev) => {
+    if (undoBlockedReason(prev.matches, matchId) !== null) return prev
+    const match = prev.matches.find((m) => m.id === matchId)
+    if (!match || !match.winnerId) return prev
+
+    const loserId = match.teamAId === match.winnerId ? match.teamBId : match.teamAId
+    const ready = match.table !== "" && match.startsAt !== ""
+
+    return {
+      ...prev,
+      matches: prev.matches.map((m) =>
+        m.id === matchId
+          ? {
+              ...m,
+              status: ready ? "scheduled" : "unscheduled",
+              winnerId: null,
+              startedAt: null,
+              completedAt: null,
+            }
+          : m,
+      ),
+      teams: prev.teams.map((t) =>
+        t.id === loserId ? { ...t, status: "active", eliminatedInRound: null } : t,
+      ),
+      notices: loserId
+        ? [
+            notice(
+              loserId,
+              "A result was corrected",
+              "The organiser took back the result of your match. You are back in the draw while it is replayed or re-entered.",
+              "warning",
+            ),
+            ...prev.notices,
+          ]
+        : prev.notices,
+    }
+  })
+}
+
+/**
+ * Step the tournament back one round.
+ *
+ * Deletes the round that was just drawn and returns to the previous one,
+ * so a result recorded in error can be corrected even after advancing. Also
+ * un-crowns a champion.
+ */
+export function revertLastAdvance() {
+  commit((prev) => {
+    if (!prev.tournament) return prev
+    const t = prev.tournament
+
+    if (t.phase === "complete" && t.championId) {
+      return {
+        ...prev,
+        tournament: { ...t, phase: "running", championId: null },
+        teams: prev.teams.map((x) =>
+          x.id === t.championId ? { ...x, status: "active" } : x,
+        ),
+      }
+    }
+
+    if (t.currentRound === 0) return prev
+    const dropped = t.currentRound
+
+    return {
+      ...prev,
+      matches: prev.matches.filter((m) => m.roundIndex < dropped),
+      tournament: {
+        ...t,
+        currentRound: dropped - 1,
+        rounds: t.rounds.map((r) =>
+          r.index === dropped ? { ...r, published: false, publishedAt: null } : r,
+        ),
+      },
+    }
+  })
+}
+
 export function advanceRound() {
   commit((prev) => {
     if (!prev.tournament) return prev
@@ -440,6 +552,8 @@ const ACTIONS = {
   publishRound,
   startMatch,
   recordWinner,
+  undoResult,
+  revertLastAdvance,
   advanceRound,
   signInTeam,
   signOutTeam,

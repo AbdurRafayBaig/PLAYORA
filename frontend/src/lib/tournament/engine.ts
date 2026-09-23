@@ -57,57 +57,114 @@ export function shuffle<T>(input: T[]): T[] {
   return a
 }
 
+export type PairingStrategy = 'sequential' | 'seeded'
+
+function blankMatch(
+  id: string,
+  roundIndex: number,
+  teamAId: string,
+  teamBId: string,
+): Match {
+  return {
+    id,
+    roundIndex,
+    teamAId,
+    teamBId,
+    table: '',
+    startsAt: '',
+    status: 'unscheduled',
+    winnerId: null,
+    startedAt: null,
+    completedAt: null,
+  }
+}
+
 /**
  * Pair a list of team ids into matches for one round.
  *
- * With an odd count the last team receives a bye and advances untouched.
- * Byes are real matches with `teamBId: null` so the bracket stays a
- * complete record of what happened rather than silently skipping a team.
+ * `sequential` walks the list in order (0v1, 2v3, …). That is what later
+ * rounds need: the winners of match 1 and match 2 must meet, or the bracket
+ * stops being a bracket.
+ *
+ * `seeded` pairs strongest against weakest (1vN, 2vN-1, …), the standard
+ * opening draw, so the two best-regarded teams cannot be knocked out by
+ * each other in round one.
+ *
+ * With an odd count one team receives a bye. It is taken from the *front*
+ * of the list, which under a seeded draw means the top seed — the
+ * conventional answer, and a deterministic one either way. Byes are real
+ * matches with `teamBId: null`, so the bracket stays a complete record
+ * rather than silently skipping a team.
  */
 export function pairTeams(
   teamIds: string[],
   roundIndex: number,
   idPrefix: string,
+  strategy: PairingStrategy = 'sequential',
 ): Match[] {
   const matches: Match[] = []
   const list = [...teamIds]
+  let byeTeam: string | null = null
 
-  let slot = 1
-  while (list.length >= 2) {
-    const a = list.shift()!
-    const b = list.shift()!
-    matches.push({
-      id: `${idPrefix}-R${roundIndex + 1}-M${slot}`,
-      roundIndex,
-      teamAId: a,
-      teamBId: b,
-      table: '',
-      startsAt: '',
-      status: 'unscheduled',
-      winnerId: null,
-      startedAt: null,
-      completedAt: null,
-    })
-    slot++
+  if (list.length % 2 === 1) {
+    byeTeam = list.shift() ?? null
   }
 
-  if (list.length === 1) {
-    const a = list.shift()!
+  if (strategy === 'seeded') {
+    const paired: [string, string][] = []
+    for (let i = 0; i < list.length / 2; i++) {
+      paired.push([list[i], list[list.length - 1 - i]])
+    }
+    paired.forEach(([a, b], i) => {
+      matches.push(blankMatch(`${idPrefix}-R${roundIndex + 1}-M${i + 1}`, roundIndex, a, b))
+    })
+  } else {
+    let slot = 1
+    while (list.length >= 2) {
+      const a = list.shift()!
+      const b = list.shift()!
+      matches.push(blankMatch(`${idPrefix}-R${roundIndex + 1}-M${slot}`, roundIndex, a, b))
+      slot++
+    }
+  }
+
+  if (byeTeam) {
     matches.push({
       id: `${idPrefix}-R${roundIndex + 1}-BYE`,
       roundIndex,
-      teamAId: a,
+      teamAId: byeTeam,
       teamBId: null,
       table: '—',
       startsAt: '',
       status: 'bye',
-      winnerId: a,
+      winnerId: byeTeam,
       startedAt: null,
       completedAt: new Date().toISOString(),
     })
   }
 
   return matches
+}
+
+/**
+ * Why a completed result can or cannot be taken back.
+ *
+ * Undo is safe only while nothing has been built on top of the result. Once
+ * the next round is drawn, the loser's place in the bracket has already been
+ * given away, so the organiser has to step the whole round back instead.
+ */
+export function undoBlockedReason(
+  matches: Match[],
+  matchId: string,
+): string | null {
+  const match = matches.find((m) => m.id === matchId)
+  if (!match) return 'That match no longer exists.'
+  if (match.status === 'bye') return 'A bye has no result to undo.'
+  if (!match.winnerId) return 'No result has been recorded yet.'
+  if (matches.some((m) => m.roundIndex > match.roundIndex)) {
+    return 'The next round has already been drawn from these winners. Step back a round first.'
+  }
+  return null
 }
 
 /** Winners of a round, in bracket order. */

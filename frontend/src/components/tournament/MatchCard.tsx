@@ -54,9 +54,12 @@ function Side({
       </span>
 
       <span className="min-w-0">
+        {/* Clamped to two lines: a very long team name should not make one
+            card twice the height of its neighbours in a grid. The full name
+            is always available as a tooltip and in the card's aria-label. */}
         <span
           className={cn(
-            "block text-sm font-bold leading-tight",
+            "block text-sm font-bold leading-tight line-clamp-2",
             isWinner ? "text-ludo-lemon-ink" : "text-ink",
           )}
           title={name}

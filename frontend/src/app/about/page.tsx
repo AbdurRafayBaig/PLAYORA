@@ -109,9 +109,11 @@ export default function AboutPage() {
               Three people, with clearly divided responsibilities.
             </p>
 
-            <div className="mt-6 space-y-4">
+            {/* Lead card centred and narrow so it grows downward, with the
+                other two side by side beneath it. */}
+            <div className="mt-6 space-y-5">
               {lead && <PersonCard {...lead} />}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 list-none">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-5 list-none max-w-3xl mx-auto">
                 {rest.map((member) => (
                   <li key={member.name}>
                     <PersonCard {...member} />

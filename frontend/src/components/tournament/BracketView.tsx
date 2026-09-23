@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef } from "react"
 import { Crown, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { initials } from "@/lib/tournament/engine"
@@ -37,9 +38,46 @@ export function BracketView({
     id ? (teams.find((t) => t.id === id)?.name ?? "Unknown") : null
 
   const champion = championId ? nameOf(championId) : null
+  const scroller = useRef<HTMLDivElement>(null)
+
+  /* A 48-team draw is seven columns wide and 24 cards deep in the first
+     one. Scrolling to a round by hand is miserable, so each round gets a
+     jump target. */
+  const jumpTo = (index: number) => {
+    const el = scroller.current?.querySelector<HTMLElement>(
+      `[data-round="${index}"]`,
+    )
+    el?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
+  }
 
   return (
+    <div className="space-y-3">
+      {rounds.length > 2 && (
+        <div
+          className="flex items-center gap-2 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 no-print"
+          aria-label="Jump to a round"
+        >
+          {rounds.map((r) => (
+            <button
+              key={r.index}
+              type="button"
+              onClick={() => jumpTo(r.index)}
+              className={cn(
+                "shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors cursor-pointer",
+                r.index === currentRound && !championId
+                  ? "bg-ludo-flame/15 border-ludo-flame/40 text-ludo-flame-ink"
+                  : "bg-surface-raised border-border text-ink-muted hover:text-ink",
+              )}
+            >
+              {r.name}
+              <span className="ml-1.5 text-ink-faint">{r.size}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
     <div
+      ref={scroller}
       tabIndex={0}
       role="region"
       aria-label="Tournament bracket"
@@ -54,8 +92,9 @@ export function BracketView({
           return (
             <section
               key={round.index}
+              data-round={round.index}
               aria-labelledby={`bracket-round-${round.index}`}
-              className="w-[17rem] shrink-0"
+              className="w-[15rem] shrink-0 scroll-mt-4"
             >
               <header
                 className={cn(
@@ -65,7 +104,7 @@ export function BracketView({
                     : "bg-ink-faint/5 border-border",
                 )}
               >
-                <h3
+                <h2
                   id={`bracket-round-${round.index}`}
                   className="text-sm font-bold text-ink flex items-center gap-2"
                 >
@@ -75,7 +114,7 @@ export function BracketView({
                       In play
                     </span>
                   )}
-                </h3>
+                </h2>
                 <p className="text-[11px] text-ink-muted">
                   {round.size} {round.size === 1 ? "team" : "teams"}
                   {!round.published && !notDrawn && (
@@ -157,15 +196,15 @@ export function BracketView({
         })}
 
         {/* Champion column — the payoff the whole bracket points at. */}
-        <section aria-labelledby="bracket-champion" className="w-[17rem] shrink-0">
+        <section aria-labelledby="bracket-champion" className="w-[15rem] shrink-0">
           <header className="rounded-xl px-3 py-2 mb-3 border bg-ludo-mango/15 border-ludo-mango/40">
-            <h3
+            <h2
               id="bracket-champion"
               className="text-sm font-bold text-ink flex items-center gap-2"
             >
               <Crown aria-hidden="true" className="w-4 h-4 text-ludo-mango-ink" />
               Champion
-            </h3>
+            </h2>
             <p className="text-[11px] text-ink-muted">1 team</p>
           </header>
 
@@ -185,6 +224,7 @@ export function BracketView({
           )}
         </section>
       </div>
+    </div>
     </div>
   )
 }

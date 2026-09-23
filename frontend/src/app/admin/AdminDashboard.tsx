@@ -15,6 +15,7 @@ import { MatchCard } from "@/components/tournament/MatchCard"
 import { useTournament } from "@/lib/tournament/store"
 import { isRoundComplete, isRoundFullyScheduled, roundSizes } from "@/lib/tournament/engine"
 import { CONTACT } from "@/lib/constants"
+import { cn } from "@/lib/utils"
 
 /** Step 1: there is nothing yet. */
 function CreateTournament() {
@@ -75,6 +76,7 @@ function CreateTournament() {
 /** Step 2: teams are being registered, no draw yet. */
 function SetupPhase() {
   const { teams, drawFirstRound } = useTournament()
+  const [mode, setMode] = useState<"random" | "seeded">("random")
   const enough = teams.length >= 2
   const path = enough ? roundSizes(teams.length).join(" → ") : "—"
 
@@ -112,20 +114,67 @@ function SetupPhase() {
         )}
       </div>
 
-      <div className="card-base p-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="card-base p-6 space-y-4">
         <div>
           <h2 className="text-base font-bold text-ink">Draw the first round</h2>
-          <p className="text-xs text-ink-muted mt-0.5 max-w-md leading-relaxed">
+          <p className="text-xs text-ink-muted mt-0.5 max-w-lg leading-relaxed">
             {enough
-              ? "Pairs every registered team at random and locks registration. You assign tables and times next."
+              ? "Pairs every registered team and locks registration. You assign tables and times next."
               : "Register at least two teams before drawing."}
           </p>
         </div>
+
+        {/* How the draw is made changes who can meet in round one, so it is
+            an explicit choice rather than a hidden default. */}
+        <fieldset className="space-y-2" disabled={!enough}>
+          <legend className="text-xs font-semibold text-ink mb-1">Draw method</legend>
+          {(
+            [
+              {
+                value: "random" as const,
+                label: "Random draw",
+                hint: "Every pairing is chance. Two strong teams can meet immediately.",
+              },
+              {
+                value: "seeded" as const,
+                label: "Seeded draw",
+                hint: "Registration order is the seeding; strongest plays weakest. A bye, if needed, goes to the top seed.",
+              },
+            ]
+          ).map((option) => (
+            <label
+              key={option.value}
+              className={cn(
+                "flex gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
+                mode === option.value
+                  ? "border-ludo-flame/50 bg-ludo-flame/5"
+                  : "border-border hover:bg-ink-faint/5",
+                !enough && "opacity-60 cursor-not-allowed",
+              )}
+            >
+              <input
+                type="radio"
+                name="draw-mode"
+                value={option.value}
+                checked={mode === option.value}
+                onChange={() => setMode(option.value)}
+                className="mt-0.5 accent-ludo-flame"
+              />
+              <span className="min-w-0">
+                <span className="block text-xs font-bold text-ink">{option.label}</span>
+                <span className="block text-[11px] text-ink-muted leading-relaxed mt-0.5">
+                  {option.hint}
+                </span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+
         <Button
           variant="primary"
           size="md"
           disabled={!enough}
-          onClick={drawFirstRound}
+          onClick={() => drawFirstRound(mode)}
         >
           <Shuffle aria-hidden="true" className="w-4 h-4" />
           Draw &amp; start

@@ -71,6 +71,8 @@ export interface Tournament {
   rounds: Round[]
   currentRound: number
   championId: string | null
+  /** How the opening round was drawn; shown on the bracket for transparency. */
+  drawMode?: 'random' | 'seeded'
 }
 
 export interface TeamNotice {

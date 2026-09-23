@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { Radio, Play, Trophy, Grid2x2, Clock, Shuffle, Lock } from "lucide-react"
+import {
+  Radio, Play, Trophy, Grid2x2, Clock, Shuffle, Lock, Undo2, TriangleAlert,
+} from "lucide-react"
 import { AdminPage } from "@/components/ui/AdminPage"
 import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -12,6 +14,7 @@ import {
   formatKickoff,
   initials,
   isRoundComplete,
+  undoBlockedReason,
 } from "@/lib/tournament/engine"
 import { cn } from "@/lib/utils"
 import { useNow } from "@/lib/useNow"
@@ -34,7 +37,8 @@ function Elapsed({ startedAt }: { startedAt: string | null }) {
  * no ambiguity about which team you are declaring the winner.
  */
 function ScorerCard({ match }: { match: Match }) {
-  const { teams, startMatch, recordWinner, tournament } = useTournament()
+  const { teams, matches, startMatch, recordWinner, undoResult, tournament } =
+    useTournament()
   const nameOf = (id: string | null) =>
     id ? (teams.find((t) => t.id === id)?.name ?? "Unknown") : "Bye"
 
@@ -125,10 +129,28 @@ function ScorerCard({ match }: { match: Match }) {
         )}
 
         {match.status === "completed" && (
-          <p className="text-xs font-semibold text-ludo-lemon-ink text-center flex items-center justify-center gap-1.5">
-            <Trophy aria-hidden="true" className="w-4 h-4" />
-            {nameOf(match.winnerId)} advanced
-          </p>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-ludo-lemon-ink text-center flex items-center justify-center gap-1.5">
+              <Trophy aria-hidden="true" className="w-4 h-4" />
+              {nameOf(match.winnerId)} advanced
+            </p>
+            {/* Referees mis-tap. Without this the only remedy was wiping the
+                tournament, so the escape hatch sits next to the mistake. */}
+            {undoBlockedReason(matches, match.id) === null ? (
+              <Button
+                size="md"
+                className="w-full"
+                onClick={() => undoResult(match.id)}
+              >
+                <Undo2 aria-hidden="true" className="w-4 h-4" />
+                Undo this result
+              </Button>
+            ) : (
+              <p className="text-[11px] text-ink-faint text-center leading-relaxed">
+                {undoBlockedReason(matches, match.id)}
+              </p>
+            )}
+          </div>
         )}
 
         {match.status === "unscheduled" && (
@@ -143,7 +165,8 @@ function ScorerCard({ match }: { match: Match }) {
 }
 
 export function LiveAdminClient() {
-  const { ready, tournament, matches, advanceRound } = useTournament()
+  const { ready, tournament, matches, advanceRound, revertLastAdvance } =
+    useTournament()
 
   if (!ready) {
     return (
@@ -208,6 +231,29 @@ export function LiveAdminClient() {
             Advance
           </Button>
         </div>
+      )}
+
+      {/* Stepping back a whole round is the remedy once a result has already
+          been built on. Destructive, so it is separated and explained. */}
+      {(tournament.currentRound > 0 || tournament.phase === "complete") && (
+        <details className="card-base p-4">
+          <summary className="text-xs font-bold text-ink cursor-pointer flex items-center gap-2">
+            <TriangleAlert aria-hidden="true" className="w-4 h-4 text-ludo-mango-ink" />
+            Something went wrong in an earlier round?
+          </summary>
+          <p className="text-[11px] text-ink-muted leading-relaxed mt-2 max-w-lg">
+            Stepping back deletes{" "}
+            {tournament.phase === "complete"
+              ? "the champion and reopens the final"
+              : `the ${round?.name ?? "current round"} draw and returns to the previous round`}
+            , so a result recorded in error can be corrected. Fixtures for the
+            deleted round are unpublished and will need reassigning.
+          </p>
+          <Button variant="danger" className="mt-3" onClick={revertLastAdvance}>
+            <Undo2 aria-hidden="true" className="w-3.5 h-3.5" />
+            Step back a round
+          </Button>
+        </details>
       )}
 
       {inRound.length === 0 ? (

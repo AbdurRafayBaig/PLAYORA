@@ -11,8 +11,12 @@ npm run build      # production build
 npm run start      # serve the production build
 npm run lint       # eslint
 npm run typecheck  # tsc --noEmit
-npm run check      # all three, in the order CI would run them
+npm run check      # lint + typecheck + build, in the order CI would run them
+npm run test:e2e   # drive the built app in real Chrome — see tests/README.md
 ```
+
+`test:e2e` runs against a **production build**, not the dev server. Several
+of the defects it guards against are invisible in development.
 
 ## Layout
 
@@ -33,7 +37,7 @@ src/
 │   ├── tournament/   MatchCard, BracketView, NoTournament
 │   ├── theme/        ThemeProvider, ThemeToggle
 │   └── ui/           Button, Panel, PageHeader, DataTable, EmptyState, …
-└── lib/
+├── lib/
     ├── tournament/
     │   ├── types.ts    domain types
     │   ├── engine.ts   pure knockout maths — round sizes, pairing, byes,
@@ -43,6 +47,11 @@ src/
     ├── utils.ts        cn, formatting
     ├── useNow.ts       one shared 1s ticker for every live clock
     └── useStoredFlag.ts
+
+tests/                 # end-to-end suites, run in real Chrome over CDP
+├── run.mjs            # launches Chrome, runs every suite, exits non-zero on failure
+├── lib/cdp.mjs        # dependency-free CDP driver
+└── suites/            # tournament · adversarial · accessibility
 ```
 
 ## Architecture
