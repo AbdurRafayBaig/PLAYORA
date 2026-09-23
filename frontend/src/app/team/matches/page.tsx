@@ -47,7 +47,7 @@ export default function TeamMatchesPage() {
                 </span>
                 Live now
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                 {live.map((match) => (
                   <MatchCard key={match.id} {...match} />
                 ))}
@@ -60,7 +60,7 @@ export default function TeamMatchesPage() {
               <h2 id="upcoming-heading" className="text-sm font-bold text-ink">
                 Upcoming ({upcoming.length})
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                 {upcoming.map((match) => (
                   <MatchCard key={match.id} {...match} />
                 ))}
@@ -77,7 +77,7 @@ export default function TeamMatchesPage() {
               <h2 id="played-heading" className="text-sm font-bold text-ink">
                 Played ({played.length})
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                 {played.map((match) => (
                   <MatchCard key={match.id} {...match} />
                 ))}

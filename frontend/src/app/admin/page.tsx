@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
                 Manage <ChevronRight aria-hidden="true" className="w-3 h-3" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               {liveMatches.map((match) => (
                 <MatchCard key={match.id} {...match} />
               ))}
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
                 View all <ChevronRight aria-hidden="true" className="w-3 h-3" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               {upcoming.map((match) => (
                 <MatchCard key={match.id} {...match} />
               ))}

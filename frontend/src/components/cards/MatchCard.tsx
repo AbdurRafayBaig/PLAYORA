@@ -40,7 +40,7 @@ function Side({
       className={cn(
         // min-w-0 is what stops a long team name from shoving the VS badge
         // off a 320px screen instead of wrapping.
-        "flex items-center gap-2.5 flex-1 min-w-0",
+        "flex items-center gap-2 flex-1 min-w-0",
         align === "right" && "flex-row-reverse text-right",
       )}
     >
@@ -61,7 +61,7 @@ function Side({
       <div className="min-w-0">
         <p
           className={cn(
-            "text-sm font-bold leading-snug",
+            "text-sm font-bold leading-tight",
             isWinner ? "text-ludo-green-ink" : "text-ink",
           )}
           title={name}
