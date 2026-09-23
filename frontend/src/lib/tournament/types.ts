@@ -81,7 +81,16 @@ export interface Tournament {
   currentRound: number
   championId: string | null
   /** How the opening round was drawn; shown on the bracket for transparency. */
-  drawMode?: 'random' | 'seeded'
+  drawMode?: 'random' | 'seeded' | 'manual'
+  /**
+   * Whether PLAYORA pairs each round itself or leaves it to the organiser.
+   *
+   * In `manual` every round — not just the first — arrives with all its
+   * teams waiting and no fixtures, so the organiser decides every tie.
+   * Applies from the round it is set onward; rounds already drawn keep
+   * their pairings until they are redrawn.
+   */
+  pairingMode?: 'auto' | 'manual'
 }
 
 export interface TeamNotice {

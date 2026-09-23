@@ -121,14 +121,22 @@ export async function run(d) {
 
   // Re-pair two of the waiting teams by hand. Scope to the labelled list:
   // "any button with aria-pressed" also matches the sidebar collapse toggle.
+  // Two taps: pick a team, then pick its opponent. Separate ticks, as a
+  // person clicking would produce.
   await d.evaluate(`(() => {
     const list = document.querySelector('[aria-label="Teams waiting for a fixture"]');
     if (!list) return false;
-    [...list.querySelectorAll('button')].slice(0, 2).forEach(b => b.click());
+    list.querySelectorAll('button')[0].click();
     return true;
   })()`)
-  await d.pause(300)
-  await d.clickText('Pair the two selected')
+  await d.pause(350)
+  await d.evaluate(`(() => {
+    const list = document.querySelector('[aria-label="Teams waiting for a fixture"]');
+    if (!list) return false;
+    // The second waiting team — tapping the first one again would deselect it.
+    list.querySelectorAll('button')[1].click();
+    return true;
+  })()`)
   await d.pause(600)
   state = await d.store()
   r.check('manual pairing creates a fixture',
@@ -150,7 +158,7 @@ export async function run(d) {
     return Boolean(btn);
   })()`)
   await d.pause(300)
-  await d.clickText('Give this team the bye')
+  await d.clickText('Give the selected team the bye')
   await d.pause(600)
   state = await d.store()
   const byeAfter = state.matches.find((m) => m.roundIndex === 1 && m.status === 'bye')
@@ -161,6 +169,39 @@ export async function run(d) {
         .find((x) => x.index === 1)
         ?.entrants.includes(byeAfter.teamAId),
     `bye is ${byeAfter?.teamAId ?? 'missing'} (was ${byeBefore?.teamAId})`)
+
+  r.section('Manual mode: every round arrives unpaired')
+  // Switch to manual from inside the round controls, then advance and check
+  // the next round comes with no fixtures at all.
+  await d.goto('/admin/fixtures')
+  await d.evaluate(`(() => {
+    const box = [...document.querySelectorAll('input[type="checkbox"]')].find(
+      (el) => el.closest('label')?.textContent.includes('pair every round myself'));
+    if (box && !box.checked) { box.click(); return true; }
+    return Boolean(box);
+  })()`)
+  await d.pause(500)
+  state = await d.store()
+  r.check('manual pairing can be switched on mid-tournament',
+    state.tournament.pairingMode === 'manual', String(state.tournament.pairingMode))
+
+  r.section('Auto draws are still fully editable')
+  await d.goto('/admin/fixtures')
+  const beforeUnpairAll = (await d.store()).matches.filter((m) => m.roundIndex === 1).length
+  await d.clickText('Unpair all')
+  await d.pause(600)
+  state = await d.store()
+  r.check('unpair all clears the round',
+    state.matches.filter((m) => m.roundIndex === 1).length === 0,
+    `${beforeUnpairAll} -> ${state.matches.filter((m) => m.roundIndex === 1).length}`)
+  r.check('every entrant is waiting again',
+    (await d.text()).includes('waiting'))
+
+  await d.clickText('Draw for me')
+  await d.pause(800)
+  state = await d.store()
+  const redrawn = state.matches.filter((m) => m.roundIndex === 1)
+  r.check('draw-for-me refills the round', redrawn.length > 0, `${redrawn.length} fixtures`)
 
   r.section('Late entrant joins the round in play')
   const beforeAdd = (await d.store()).teams.length

@@ -241,13 +241,14 @@ export function regeneratePassword(id: string): string {
  * field is odd, goes to the top seed rather than to whoever the shuffle
  * happened to leave over.
  */
-export function drawFirstRound(mode: "random" | "seeded" = "random") {
+export function drawFirstRound(mode: "random" | "seeded" | "manual" = "random") {
   commit((prev) => {
     if (!prev.tournament || prev.tournament.phase !== "setup") return prev
     if (prev.teams.length < 2) return prev
 
     const ids = prev.teams.map((t) => t.id)
     const order = mode === "seeded" ? ids : shuffle(ids)
+    const manual = mode === "manual"
 
     return {
       ...prev,
@@ -260,8 +261,43 @@ export function drawFirstRound(mode: "random" | "seeded" = "random") {
         rounds: [{ index: 0, entrants: ids, published: false, publishedAt: null }],
         currentRound: 0,
         drawMode: mode,
+        pairingMode: manual ? "manual" : "auto",
       },
-      matches: pairTeams(order, 0, "M", mode === "seeded" ? "seeded" : "sequential"),
+      // Manual leaves the field waiting so the organiser sets every tie.
+      matches: manual
+        ? []
+        : pairTeams(order, 0, "M", mode === "seeded" ? "seeded" : "sequential"),
+    }
+  })
+}
+
+/** Switch between PLAYORA drawing each round and the organiser doing it. */
+export function setPairingMode(mode: "auto" | "manual") {
+  commit((prev) =>
+    prev.tournament ? { ...prev, tournament: { ...prev.tournament, pairingMode: mode } } : prev,
+  )
+}
+
+/** Clear every unplayed pairing in a round and send the teams back to the pool. */
+export function unpairAll(roundIndex: number) {
+  commit((prev) => {
+    const played = prev.matches.some(
+      (m) =>
+        m.roundIndex === roundIndex &&
+        (m.status === "live" || m.status === "completed"),
+    )
+    if (played) return prev
+    return {
+      ...prev,
+      matches: prev.matches.filter((m) => m.roundIndex !== roundIndex),
+      tournament: prev.tournament
+        ? {
+            ...prev.tournament,
+            rounds: prev.tournament.rounds.map((r) =>
+              r.index === roundIndex ? { ...r, published: false, publishedAt: null } : r,
+            ),
+          }
+        : prev.tournament,
     }
   })
 }
@@ -652,6 +688,8 @@ export function advanceRound() {
     const nextIndex = current + 1
     const alreadyDrawn = prev.matches.some((m) => m.roundIndex === nextIndex)
     const existing = prev.tournament.rounds.find((r) => r.index === nextIndex)
+    // In manual mode every round arrives unpaired, not just the first.
+    const manual = prev.tournament.pairingMode === "manual"
 
     return {
       ...prev,
@@ -665,9 +703,10 @@ export function advanceRound() {
               { index: nextIndex, entrants: winners, published: false, publishedAt: null },
             ],
       },
-      matches: alreadyDrawn
-        ? prev.matches
-        : [...prev.matches, ...pairTeams(winners, nextIndex, "M")],
+      matches:
+        alreadyDrawn || manual
+          ? prev.matches
+          : [...prev.matches, ...pairTeams(winners, nextIndex, "M")],
     }
   })
 }
@@ -726,6 +765,8 @@ const ACTIONS = {
   revertLastAdvance,
   advanceRound,
   unpairMatch,
+  unpairAll,
+  setPairingMode,
   createMatch,
   setBye,
   redrawCurrentRound,

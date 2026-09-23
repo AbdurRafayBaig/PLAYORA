@@ -83,7 +83,7 @@ function CreateTournament() {
 /** Step 2: teams are being registered, no draw yet. */
 function SetupPhase() {
   const { teams, drawFirstRound } = useTournament()
-  const [mode, setMode] = useState<"random" | "seeded">("random")
+  const [mode, setMode] = useState<"random" | "seeded" | "manual">("random")
   const enough = teams.length >= 2
   const path = enough ? projectedPath(teams.length).join(" → ") : "—"
 
@@ -126,9 +126,11 @@ function SetupPhase() {
         <div>
           <h2 className="text-base font-bold text-ink">Draw the first round</h2>
           <p className="text-xs text-ink-muted mt-0.5 max-w-lg leading-relaxed">
-            {enough
-              ? "Pairs every registered team and locks registration. You assign tables and times next."
-              : "Register at least two teams before drawing."}
+            {!enough
+              ? "Register at least two teams before drawing."
+              : mode === "manual"
+                ? "Opens the round with every team waiting. You pair them yourself on the Fixtures page."
+                : "Pairs every registered team. You assign tables and times next."}
           </p>
         </div>
 
@@ -147,6 +149,11 @@ function SetupPhase() {
                 value: "seeded" as const,
                 label: "Seeded draw",
                 hint: "Registration order is the seeding; strongest plays weakest. A bye, if needed, goes to the top seed.",
+              },
+              {
+                value: "manual" as const,
+                label: "I will pair every round myself",
+                hint: "No fixtures are created. Every team waits, and you decide each tie from Fixtures — in this round and every round after it.",
               },
             ]
           ).map((option) => (
@@ -176,6 +183,13 @@ function SetupPhase() {
               </span>
             </label>
           ))}
+          <p className="text-[11px] text-ink-muted leading-relaxed pt-1">
+            Whichever you choose, nothing is locked in. On the Fixtures page you
+            can unpair any tie, pair two teams yourself, hand the bye to a
+            particular team or redraw the whole round — right up until a match
+            starts. You can also switch between drawing and pairing by hand
+            part-way through the tournament.
+          </p>
         </fieldset>
 
         <Button
@@ -185,7 +199,7 @@ function SetupPhase() {
           onClick={() => drawFirstRound(mode)}
         >
           <Shuffle aria-hidden="true" className="w-4 h-4" />
-          Draw &amp; start
+          {mode === "manual" ? "Start — I'll pair it" : "Draw & start"}
         </Button>
       </div>
     </div>

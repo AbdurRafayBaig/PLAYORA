@@ -177,9 +177,19 @@ export function FixturesAdminClient() {
     )
   }
 
-  // Only rounds that have actually been drawn can be scheduled.
-  const drawn = tournament.rounds.filter((r) =>
-    matches.some((m) => m.roundIndex === r.index),
+  /*
+   * Rounds worth showing: any that already has fixtures, plus the round in
+   * play even when it has none.
+   *
+   * That second half is not a nicety. Filtering on "has matches" alone made
+   * the round disappear the moment you unpaired everything — or drew in
+   * manual mode, where a round starts with no fixtures by definition —
+   * taking the pairing controls with it and leaving no way to pair anything.
+   */
+  const drawn = tournament.rounds.filter(
+    (r) =>
+      r.index === tournament.currentRound ||
+      matches.some((m) => m.roundIndex === r.index),
   )
 
   return (
