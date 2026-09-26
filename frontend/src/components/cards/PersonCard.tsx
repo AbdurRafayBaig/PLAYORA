@@ -155,6 +155,9 @@ export function PersonCard({
           <Portrait photo={photo} name={name} size="lg" accentText={accentText} />
 
           <div className="text-center">
+            <p className="inline-flex items-center px-2.5 py-1 mb-2 rounded-full bg-ludo-flame/15 text-ludo-flame-ink text-[10px] font-bold uppercase tracking-wider">
+              Project lead
+            </p>
             <h3 className="text-2xl font-extrabold tracking-tight text-ink leading-tight">
               {name}
             </h3>

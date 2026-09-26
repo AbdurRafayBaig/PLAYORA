@@ -115,7 +115,7 @@ export interface TournamentState {
    *
    * A client-side flag gating a client-side console — it keeps the panel
    * from being reachable by typing the URL, which is what it is for. It is
-   * not a security boundary; that arrives with the Django session.
+   * not a security boundary; that arrives with server-side sessions.
    */
   adminSignedIn: boolean
 }

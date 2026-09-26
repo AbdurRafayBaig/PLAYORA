@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════
    PLAYORA — Knockout engine
    Pure functions. No storage, no React, no side effects — so the bracket
-   maths can be reasoned about (and later ported to Django) on its own.
+   maths can be reasoned about (and later run on the server) on its own.
    ═══════════════════════════════════════════════ */
 
 import type { Match, Round, Team } from './types'

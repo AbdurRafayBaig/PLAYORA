@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Home, Radio, Calendar, BarChart3, Compass } from "lucide-react"
+import { Home, Radio, Calendar, GitBranch, Compass } from "lucide-react"
 import { BRAND } from "@/lib/constants"
 
 export const metadata = {
@@ -11,7 +11,7 @@ const SUGGESTIONS = [
   { label: "Home", href: "/", icon: Home },
   { label: "Live Matches", href: "/live", icon: Radio },
   { label: "Fixtures", href: "/fixtures", icon: Calendar },
-  { label: "Standings", href: "/standings", icon: BarChart3 },
+  { label: "Bracket", href: "/bracket", icon: GitBranch },
 ]
 
 export default function NotFound() {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import {
-  Trophy, Radio, Shield, GitBranch, ArrowRight, Mail, Phone,
+  Trophy, Radio, Shield, GitBranch, ArrowRight, Mail, Phone, Shuffle,
 } from "lucide-react"
 import { PlayoraHeader } from "@/components/layout/PlayoraHeader"
 import { PlayoraFooter } from "@/components/layout/PlayoraFooter"
@@ -11,7 +11,7 @@ import { TEAM_MEMBERS, BRAND, CONTACT } from "@/lib/constants"
 export const metadata: Metadata = {
   title: "About",
   description:
-    "The team behind PLAYORA and how the platform runs a Ludo knockout — bracket generation, live match control and a portal for every registered team.",
+    "The team behind PLAYORA, led by Abdur Rafay Baig, and how it runs a Ludo knockout — the draw, manual or automatic pairing, live match control and a portal for every team.",
   alternates: { canonical: "/about" },
 }
 
@@ -20,29 +20,36 @@ const CAPABILITIES = [
     icon: GitBranch,
     title: "Bracket engine",
     description:
-      "Generates the draw, halves each round, and assigns a bye when the field is odd. Progression is derived from results, so the two can never disagree.",
+      "Halves the field every round — 50 teams becomes 25 matches, then 13 — and handles the bye when a round comes out odd. Progression comes from results, so the two can never disagree.",
     tint: "bg-ludo-orchid/15 text-ludo-orchid-ink",
+  },
+  {
+    icon: Shuffle,
+    title: "Your draw, your call",
+    description:
+      "Let PLAYORA draw the round, or pair every match yourself. An automatic draw stays editable — unpair, re-pair, move the bye — until a match starts.",
+    tint: "bg-ludo-mango/20 text-ludo-mango-ink",
   },
   {
     icon: Radio,
     title: "Live match control",
     description:
-      "The referee starts a match and it goes live everywhere at once, with a running clock, then records which team advanced.",
+      "Start a match and it shows as live everywhere, with a running clock, until you record which team advanced.",
     tint: "bg-ludo-flame/15 text-ludo-flame-ink",
   },
   {
     icon: Shield,
     title: "One organiser, full control",
     description:
-      "Registration, logins, the draw, tables, kickoff times and publishing all sit with the organiser. Teams get a read-only view of their own run.",
+      "Registration, logins, the draw, tables, kickoff times and publishing all sit with the organiser. Teams only see their own fixtures, and only once a round is published.",
     tint: "bg-ludo-indigo/10 text-ludo-indigo-ink",
   },
 ]
 
 const STACK = [
   { group: "Frontend", items: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS v4"] },
-  { group: "Backend", items: ["Django", "Django REST", "PostgreSQL", "WebSockets"] },
-  { group: "Delivery", items: ["Vercel", "Static prerender", "PWA manifest"] },
+  { group: "Data", items: ["PostgreSQL (next release)", "Prisma", "Neon"] },
+  { group: "Delivery", items: ["Vercel", "Installable web app", "Works down to 320px"] },
 ]
 
 export default function AboutPage() {
@@ -61,13 +68,15 @@ export default function AboutPage() {
               About {BRAND.name}
             </p>
             <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold text-ink tracking-tight text-balance max-w-2xl">
-              Tournament software built by the people who run the tournament
+              A Ludo knockout, run from one screen
             </h1>
             <p className="mt-4 text-sm sm:text-base text-ink-muted leading-relaxed max-w-2xl">
-              {BRAND.name} runs a single-elimination Ludo championship end to
-              end — registration and logins, the draw, table and time
-              assignment, live match control, and a portal each team can follow
-              their own run in. Built under Tynovate for the Sports Society.
+              {BRAND.name} replaces the whiteboard, the WhatsApp group and the
+              paper bracket. The organiser registers teams and hands each one a
+              login, draws the rounds or pairs them by hand, sets tables and
+              kickoff times at the Cafe, and runs every match live. Teams follow
+              their own run from their phones; everyone else follows the
+              bracket. Built under Tynovate for the Sports Society.
             </p>
           </div>
         </section>
@@ -77,7 +86,7 @@ export default function AboutPage() {
           <h2 id="what-heading" className="text-xl font-extrabold text-ink tracking-tight">
             What it does
           </h2>
-          <ul className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {CAPABILITIES.map((c) => {
               const Icon = c.icon
               return (
@@ -106,7 +115,8 @@ export default function AboutPage() {
               The team
             </h2>
             <p className="mt-1.5 text-sm text-ink-muted max-w-xl leading-relaxed">
-              Three people, with clearly divided responsibilities.
+              Led by Abdur Rafay Baig, who architected and built the platform
+              end to end, with two specialists on the backend and on mobile.
             </p>
 
             {/* Lead card centred and narrow so it grows downward, with the

@@ -19,7 +19,7 @@ import type { Match, Player, Team, TeamNotice, TournamentState } from "./types"
 
    ── Read this before running a real tournament ──
    State lives in this browser's localStorage. Two consequences the UI is
-   honest about, and that only the Django backend can fix:
+   honest about, and that only a shared backend can fix:
 
    1. A team login created on the admin's laptop does not exist on a
       captain's phone. Cross-device access needs a server.

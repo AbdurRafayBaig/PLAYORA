@@ -13,7 +13,7 @@ import { LudoMark } from "@/components/layout/LudoMark"
  *
  * This is a client-side gate on a client-side app: it stops the console
  * being reachable by typing the URL, which is what it is for. Real
- * protection arrives with the Django session.
+ * protection arrives with server-side sessions.
  */
 export function SignInGate({
   title,

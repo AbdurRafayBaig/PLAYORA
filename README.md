@@ -100,7 +100,7 @@ Ludo_System/
 | Styling | Tailwind CSS v4 with CSS-variable design tokens |
 | Icons | lucide-react |
 | Theming | next-themes (class strategy, follows the device by default) |
-| Backend | Django REST + PostgreSQL + WebSockets *(specified in `docs/`, not yet wired)* |
+| Database | PostgreSQL on Neon via Prisma *(planned — see `docs/07_Database_Implementation.md`)* |
 
 ---
 
@@ -131,7 +131,7 @@ organiser registers them. There are none until a tournament is set up.
 
 > **Warning:** both checks happen in the browser, so `NEXT_PUBLIC_*` values are
 > readable from the JS bundle. This keeps secrets out of git; it does not make
-> the console secure. Move authentication to Django before running a real
+> the console secure. Move authentication to the server before running a real
 > event, and never reuse a password from anywhere else.
 
 ---
@@ -174,7 +174,7 @@ same `NEXT_PUBLIC_SITE_URL` variable. Netlify needs
 ```bash
 cd frontend
 npm run check      # eslint + tsc --noEmit + next build
-npm run test:e2e   # 114 assertions against the built app in real Chrome
+npm run test:e2e   # 118 assertions against the built app in real Chrome
 ```
 
 `test:e2e` launches headless Chrome and drives the production build over the
@@ -190,7 +190,7 @@ Each release of this branch was verified with:
 - `next build` — every route prerenders, no type errors
 - `eslint` — clean, including the React 19 hooks rules
 - every route returning 200, and the 404 page rendering for unknown paths
-- `npm run test:e2e` — 114 assertions, zero failures
+- `npm run test:e2e` — 118 assertions, zero failures
 
 ---
 
@@ -198,7 +198,7 @@ Each release of this branch was verified with:
 
 State currently lives in the browser's localStorage
 (`frontend/src/lib/tournament/store.tsx`). **Two limits follow from that, and
-both need the Django backend to fix:**
+both need the shared backend to fix:**
 
 - A team login created on the organiser's laptop does not exist on a
   captain's phone. Cross-device access is not possible without a server.

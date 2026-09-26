@@ -97,49 +97,50 @@ export const TEAM_MEMBERS = [
   {
     name: 'Abdur Rafay Baig',
     role: 'Full Team Lead Architect',
-    title: 'Backend and frontend — end to end',
-    bio: 'Leads PLAYORA and built it. Designed the knockout engine and data model, the REST contract the Django service implements, and the entire interface from the design tokens upward.',
+    title: 'Backend and frontend, end to end',
+    bio: 'Leads PLAYORA from idea to release. Architected the knockout engine and the tournament data model, and built every screen the organiser, the teams and the spectators use — then owns the database and API the platform is moving onto.',
     photo: '/abdur-rafay.jpeg',
     linkedin: 'https://www.linkedin.com/in/irafaybaig/',
     focus: [
-      'Tournament engine — bracket generation, bye handling, round progression',
-      'Data model and the REST contract for the Django service',
-      'Design system, component library and the full interface',
-      'Accessibility and performance standards across the product',
+      'Product direction and overall system architecture',
+      'Knockout engine — draws, byes, manual pairing and round progression',
+      'Admin console, team portal and the public tournament hub',
+      'Database and API design for the shared backend',
+      'Design system, accessibility and performance across the product',
     ],
-    skills: ['Next.js', 'TypeScript', 'Django', 'PostgreSQL', 'REST', 'WebSockets', 'UI/UX'],
+    skills: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'PostgreSQL', 'System Design', 'UI/UX'],
     isPrimary: true,
   },
   {
     name: 'Ammar Ahmad',
     role: 'Backend Architect',
-    title: 'Data and services',
-    bio: 'Owns the server side PLAYORA runs on — the schema, the API surface, and the integrity rules that keep a match result from ever contradicting the bracket.',
-    photo: '/placeholder-avatar.svg',
+    title: 'Data, APIs and integrity',
+    bio: 'Shapes the server side PLAYORA runs on — the database schema, the API behind every organiser action, and the rules that stop a result from ever contradicting the bracket.',
+    photo: '/ammar-ahmad.jpeg',
     linkedin: '',
     focus: [
       'Database schema and migrations',
-      'REST endpoints and authentication',
-      'Match-state integrity and audit trail',
-      'Real-time channel for live scores',
+      'API endpoints and secure sign-in',
+      'Result integrity — one fixture per team per round, winners only from the two sides',
+      'Backups and data safety between tournaments',
     ],
-    skills: ['Django', 'PostgreSQL', 'REST', 'WebSockets'],
+    skills: ['PostgreSQL', 'SQL', 'REST APIs', 'Authentication'],
     isPrimary: false,
   },
   {
     name: 'Wajdan Ali',
     role: 'Mobile Optimization',
-    title: 'Device and field experience',
-    bio: 'Makes PLAYORA work on the phone in a captain’s hand and the referee’s screen beside the table — the two places it is actually used on tournament day.',
-    photo: '/placeholder-avatar.svg',
+    title: 'Phone-first experience',
+    bio: 'Makes PLAYORA work where it is actually used on tournament day — on a captain’s phone in the queue and on the organiser’s screen beside the table.',
+    photo: '/wajdan-ali.jpeg',
     linkedin: '',
     focus: [
-      'Responsive layouts down to 320px',
-      'Touch targets, safe-area handling and one-handed reach',
-      'On-court referee and scoring views',
-      'Cross-device testing and load performance',
+      'Layouts that hold up down to a 320px screen',
+      'Touch targets, safe areas and one-handed reach',
+      'Bottom navigation and the installable home-screen app',
+      'Testing across real phones and browsers',
     ],
-    skills: ['Responsive Design', 'Mobile UX', 'Performance', 'QA'],
+    skills: ['Responsive Design', 'Mobile UX', 'PWA', 'Cross-device QA'],
     isPrimary: false,
   },
 ] as const
@@ -189,7 +190,7 @@ export const SITE_URL =
  *
  * This is still a client-side check and therefore readable by anyone who
  * opens devtools. It gates a demo, not a real console — move it to the
- * Django session/JWT endpoint before this runs a live tournament.
+ * server-side session before this runs a live tournament.
  */
 export const ADMIN_LOGIN = {
   email: process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? '',

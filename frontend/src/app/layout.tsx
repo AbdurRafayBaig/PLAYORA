@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: `%s | ${BRAND.name}`,
   },
   description:
-    "PLAYORA is a complete sports tournament operations platform for managing teams, fixtures, live matches, standings, and progression. Built for Sports Society Ludo tournaments.",
+    "PLAYORA runs a single-elimination Ludo tournament end to end: team registration and logins, the knockout draw, table and kickoff assignment, live matches and the bracket.",
   applicationName: BRAND.name,
   keywords: [
     "tournament management",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "ludo tournament",
     "match tracking",
     "live scores",
-    "standings",
+    "knockout bracket",
     "fixtures",
     "PLAYORA",
   ],
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${BRAND.name} — ${BRAND.tagline}`,
     description:
-      "Follow live matches, fixtures, standings and results for the Ludo Championship — all in one tournament portal.",
+      "Follow live matches, fixtures, the knockout bracket and results for the Ludo Championship — all in one tournament portal.",
     type: "website",
     siteName: BRAND.name,
     locale: "en_PK",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${BRAND.name} — ${BRAND.tagline}`,
     description:
-      "Follow live matches, fixtures, standings and results for the Ludo Championship.",
+      "Follow live matches, fixtures, the knockout bracket and results for the Ludo Championship.",
     images: ["/og-image.png"],
   },
   robots: {

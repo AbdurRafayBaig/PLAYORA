@@ -10,7 +10,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: `${BRAND.name} — ${BRAND.tagline}`,
     short_name: BRAND.name,
     description:
-      "Live matches, fixtures, standings and results for the Ludo Championship.",
+      "Live matches, fixtures, the knockout bracket and results for the Ludo Championship.",
     start_url: "/",
     scope: "/",
     display: "standalone",
@@ -27,7 +27,7 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       { name: "Live Matches", short_name: "Live", url: "/live" },
-      { name: "Standings", short_name: "Table", url: "/standings" },
+      { name: "Bracket", short_name: "Bracket", url: "/bracket" },
       { name: "Fixtures", short_name: "Fixtures", url: "/fixtures" },
     ],
   }

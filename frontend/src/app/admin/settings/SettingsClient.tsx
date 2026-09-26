@@ -99,12 +99,11 @@ export function SettingsClient() {
           <Row
             label="Where this is stored"
             value="This browser's local storage"
-            hint="Teams cannot sign in from their own phones until the Django API is connected — a login created here exists only on this device."
+            hint="Teams cannot sign in from their own phones until the database is connected — a login created here exists only on this device."
           />
           <Row
-            label="Connect a backend"
-            value="Set NEXT_PUBLIC_API_URL to point PLAYORA at Django REST"
-            action={<Button disabled>Connect</Button>}
+            label="Shared database"
+            value="Not connected yet — coming next, so every phone sees the same tournament"
           />
         </div>
       </Panel>

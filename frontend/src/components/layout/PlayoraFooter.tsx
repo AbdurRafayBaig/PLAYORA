@@ -10,7 +10,7 @@ const PORTAL_LINKS = [
   { label: "Contact & Rules", href: "/contact" },
 ]
 
-const TECH = ["Next.js", "TypeScript", "Tailwind", "Django", "PostgreSQL"]
+const TECH = ["Next.js", "React", "TypeScript", "Tailwind CSS"]
 
 export function PlayoraFooter() {
   return (
